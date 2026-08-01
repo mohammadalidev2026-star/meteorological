@@ -26,11 +26,17 @@ function WeatherStats() {
           key={item.title}
           className="
           bg-white
+          dark:bg-slate-900
           rounded-3xl
           shadow-sm
+          hover:shadow-xl
           border
           border-gray-100
+          dark:border-slate-700
           p-6
+          transition-all
+          duration-300
+          hover:-translate-y-1
           "
         >
           <div className="flex items-center gap-4">
@@ -40,18 +46,41 @@ function WeatherStats() {
               h-14
               rounded-2xl
               bg-yellow-100
+              dark:bg-yellow-500/10
               flex
               items-center
               justify-center
               "
             >
-              <Icon icon={item.icon} className="text-4xl text-yellow-500" />
+              <Icon
+                icon={item.icon}
+                className="
+                text-4xl
+                text-yellow-500
+                "
+              />
             </div>
 
             <div>
-              <p className="text-gray-500 text-sm">{item.title}</p>
+              <p
+                className="
+                text-sm
+                text-gray-500
+                dark:text-gray-400
+                "
+              >
+                {item.title}
+              </p>
 
-              <h3 className="text-2xl font-bold text-gray-800 mt-1">
+              <h3
+                className="
+                mt-1
+                text-2xl
+                font-bold
+                text-gray-800
+                dark:text-white
+                "
+              >
                 {item.value}
               </h3>
             </div>

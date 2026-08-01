@@ -1,8 +1,15 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 @import url("https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap");
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  direction: rtl;
 }
 
 body {
@@ -10,10 +17,9 @@ body {
   font-family: "Vazirmatn", "IRANSans", "Segoe UI", sans-serif;
   background: #f4f8f7;
   color: #1f2937;
-}
-
-html {
-  direction: rtl;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 button {

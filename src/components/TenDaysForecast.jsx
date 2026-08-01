@@ -126,86 +126,64 @@ const forecast = [
   },
 ];
 
-const hourlyData = [
-  { time: "00:00", temp: "20°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "01:00", temp: "19°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "02:00", temp: "19°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "03:00", temp: "18°", icon: "solar:cloud-bold-duotone" },
-  { time: "04:00", temp: "17°", icon: "solar:cloud-bold-duotone" },
-  { time: "05:00", temp: "17°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "06:00", temp: "18°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "07:00", temp: "20°", icon: "solar:sun-bold-duotone" },
-  { time: "08:00", temp: "22°", icon: "solar:sun-bold-duotone" },
-  { time: "09:00", temp: "24°", icon: "solar:sun-bold-duotone" },
-  { time: "10:00", temp: "26°", icon: "solar:sun-bold-duotone" },
-  { time: "11:00", temp: "27°", icon: "solar:sun-bold-duotone" },
-  { time: "12:00", temp: "28°", icon: "solar:sun-bold-duotone" },
-  { time: "13:00", temp: "30°", icon: "solar:sun-bold-duotone" },
-  { time: "14:00", temp: "31°", icon: "solar:sun-bold-duotone" },
-  { time: "15:00", temp: "32°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "16:00", temp: "31°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "17:00", temp: "29°", icon: "solar:cloud-bold-duotone" },
-  { time: "18:00", temp: "27°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "19:00", temp: "25°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "20:00", temp: "24°", icon: "solar:cloud-bold-duotone" },
-  { time: "21:00", temp: "23°", icon: "solar:cloud-bold-duotone" },
-  { time: "22:00", temp: "22°", icon: "solar:cloud-bold-duotone" },
-  { time: "23:00", temp: "21°", icon: "solar:cloud-rain-bold-duotone" },
-];
+const hourlyData = Array.from({ length: 24 }, (_, index) => ({
+  time: `${String(index).padStart(2, "0")}:00`,
+  temp: `${20 + Math.floor(Math.random() * 13)}°`,
+  icon: index < 6 ? "solar:cloud-bold-duotone" : "solar:sun-bold-duotone",
+}));
 
 function TenDaysForecast() {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showForecast, setShowForecast] = useState(false);
 
-  function toggleDay(index) {
-    setSelectedDay(selectedDay === index ? null : index);
-  }
   return (
     <section className="mt-8">
       <button
         onClick={() => setShowForecast(!showForecast)}
         className="
-      w-full
-      bg-white
-      rounded-3xl
-      border
-      border-gray-100
-      shadow-sm
-      p-5
-      flex
-      items-center
-      justify-between
-      hover:shadow-md
-      transition-all
-      "
+        w-full
+        bg-white
+        dark:bg-slate-900
+        rounded-3xl
+        border
+        border-gray-100
+        dark:border-slate-700
+        shadow-sm
+        p-5
+        flex
+        items-center
+        justify-between
+        hover:shadow-lg
+        transition-all
+        duration-300
+        "
       >
         <div className="flex items-center gap-3">
           <div
             className="
-          w-12
-          h-12
-          rounded-2xl
-          bg-yellow-100
-          flex
-          items-center
-          justify-center
-          "
+            w-12
+            h-12
+            rounded-2xl
+            bg-yellow-100
+            dark:bg-yellow-500/10
+            flex
+            items-center
+            justify-center
+            "
           >
             <Icon
               icon="solar:calendar-bold-duotone"
-              className="
-            text-3xl
-            text-yellow-500
-            "
+              className="text-3xl text-yellow-500"
             />
           </div>
 
           <span
             className="
-          text-xl
-          font-bold
-          text-gray-800
-          "
+            text-xl
+            font-bold
+            text-gray-800
+            dark:text-white
+            "
           >
             پیش‌بینی ۱۰ روز آینده
           </span>
@@ -217,32 +195,32 @@ function TenDaysForecast() {
               ? "solar:alt-arrow-up-bold"
               : "solar:alt-arrow-down-bold"
           }
-          className="
-        text-3xl
-        text-yellow-500
-        "
+          className="text-3xl text-yellow-500"
         />
       </button>
 
       <div
         className={`
-      overflow-hidden
-      transition-all
-      duration-500
+        overflow-hidden
+        transition-all
+        duration-500
 
-      ${showForecast ? "max-h-[5000px] opacity-100 mt-5" : "max-h-0 opacity-0"}
-
-      `}
+        ${
+          showForecast ? "max-h-[5000px] opacity-100 mt-5" : "max-h-0 opacity-0"
+        }
+        `}
       >
         <div
           className="
-        bg-white
-        rounded-3xl
-        shadow-sm
-        border
-        border-gray-100
-        overflow-hidden
-        "
+          bg-white
+          dark:bg-slate-900
+          rounded-3xl
+          shadow-sm
+          border
+          border-gray-100
+          dark:border-slate-700
+          overflow-hidden
+          "
         >
           {forecast.map((item, index) => (
             <DayWeather
@@ -263,8 +241,6 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
   const [hourEmblaRef, hourEmblaApi] = useEmblaCarousel({
     direction: "rtl",
     align: "start",
-    containScroll: "trimSnaps",
-    slidesToScroll: 1,
   });
 
   const [hourPrev, setHourPrev] = useState(false);
@@ -283,72 +259,62 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
     checkButtons();
 
     hourEmblaApi.on("select", checkButtons);
-
     hourEmblaApi.on("reInit", checkButtons);
 
     return () => {
       hourEmblaApi.off("select", checkButtons);
-
       hourEmblaApi.off("reInit", checkButtons);
     };
   }, [hourEmblaApi, checkButtons]);
 
-  function toggle() {
-    setSelectedDay(selectedDay === index ? null : index);
-  }
+  const open = selectedDay === index;
 
   return (
-    <div className={selectedDay === index ? "bg-yellow-50" : ""}>
-      <div onClick={toggle} className="cursor-pointer">
+    <div className={open ? "bg-yellow-50 dark:bg-yellow-500/10" : ""}>
+      <div onClick={() => setSelectedDay(open ? null : index)}>
         <ForecastDay
           day={item.day}
           icon={item.icon}
           min={item.min}
           max={item.max}
-          open={selectedDay === index}
+          open={open}
         />
       </div>
 
       <div
         className={`
-        overflow-hidden
-        transition-all
-        duration-500
+          overflow-hidden
+          transition-all
+          duration-500
 
-        ${
-          selectedDay === index
-            ? "max-h-[2500px] opacity-100"
-            : "max-h-0 opacity-0"
-        }
+          ${open ? "max-h-[2500px] opacity-100" : "max-h-0 opacity-0"}
         `}
       >
         <div
           className="
-          p-6
-          border-t
-          border-yellow-200
-          "
+            p-6
+            border-t
+            border-yellow-200
+            dark:border-yellow-500/30
+            "
         >
           <h3
             className="
-            text-2xl
-            font-bold
-            text-gray-800
-            mb-2
-            "
+              text-2xl
+              font-bold
+              text-gray-800
+              dark:text-white
+              mb-2
+              "
           >
             وضعیت آب‌وهوای روز {item.day}
           </h3>
 
-          <p className="text-gray-500 mb-6">{item.description}</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">
+            {item.description}
+          </p>
 
-          <div
-            className="
-            grid
-            md:grid-cols-3
-            gap-4
-            "
-          >
+          <div className="grid md:grid-cols-3 gap-4">
             <InfoCard
               title="رطوبت"
               value={item.humidity}
@@ -368,59 +334,27 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
             />
           </div>
 
-          <div
-            className="
-            grid
-            grid-cols-2
-            gap-4
-            mt-5
-            "
-          >
+          <div className="grid grid-cols-2 gap-4 mt-5">
             <InfoBox title="طلوع آفتاب" value={item.sunrise} />
 
             <InfoBox title="غروب آفتاب" value={item.sunset} />
           </div>
 
           <div className="mt-8">
-            <div
+            <h4
               className="
-              flex
-              items-center
-              gap-3
-              mb-5
-              "
-            >
-              <div
-                className="
-                w-12
-                h-12
-                rounded-2xl
-                bg-yellow-100
-                flex
-                items-center
-                justify-center
-                "
-              >
-                <Icon
-                  icon="solar:clock-circle-bold-duotone"
-                  className="
-                  text-3xl
-                  text-yellow-500
-                  "
-                />
-              </div>
-
-              <h4
-                className="
                 font-bold
                 text-xl
+                text-gray-800
+                dark:text-white
+                mb-5
                 "
-              >
-                پیش‌بینی ساعتی روز {item.day}
-              </h4>
-            </div>
+            >
+              پیش‌بینی ساعتی
+            </h4>
 
             <div className="relative">
+              {/* فلش قبلی */}
               <button
                 onClick={() => hourEmblaApi?.scrollPrev()}
                 disabled={!hourPrev}
@@ -440,19 +374,23 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
                   shadow-lg
                   transition-all
 
-    ${hourPrev ? "bg-white border-gray-200" : "bg-gray-200 border-gray-200"}
-  `}
+      ${
+        hourPrev
+          ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+          : "bg-gray-200 dark:bg-slate-700 border-gray-600"
+      }
+    `}
               >
                 <Icon
                   icon="solar:alt-arrow-left-bold"
-                  className={
-                    hourPrev
-                      ? "text-2xl text-yellow-600"
-                      : "text-2xl text-gray-400"
-                  }
+                  className={`
+        text-2xl
+        ${hourPrev ? "text-yellow-600" : "text-gray-400"}
+      `}
                 />
               </button>
 
+              {/* فلش بعدی */}
               <button
                 onClick={() => hourEmblaApi?.scrollNext()}
                 disabled={!hourNext}
@@ -472,73 +410,82 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
                   shadow-lg
                   transition-all
 
-    ${hourNext ? "bg-white border-gray-200" : "bg-gray-200 border-gray-200"}
-  `}
+      ${
+        hourNext
+          ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+          : "bg-gray-200 dark:bg-slate-700 border-gray-600"
+      }
+    `}
               >
                 <Icon
                   icon="solar:alt-arrow-right-bold"
-                  className={
-                    hourNext
-                      ? "text-2xl text-yellow-600"
-                      : "text-2xl text-gray-400"
-                  }
+                  className={`
+                    text-2xl
+                    ${hourNext ? "text-yellow-600" : "text-gray-400"}
+                  `}
                 />
               </button>
 
+              {/* لیست ساعت‌ها */}
               <div
                 ref={hourEmblaRef}
                 className="
-                overflow-hidden
-                px-12
-                cursor-grab
-                active:cursor-grabbing
-                "
+                  overflow-hidden
+                  cursor-grab
+                  active:cursor-grabbing
+                  "
               >
                 <div className="flex">
                   {hourlyData.map((hour) => (
                     <div
                       key={hour.time}
                       className="
-                      flex-[0_0_70%]
-                      sm:flex-[0_0_45%]
-                      md:flex-[0_0_30%]
-                      lg:flex-[0_0_16.666%]
-                      px-2
+                        flex-[0_0_34%]
+                        sm:flex-[0_0_30%]
+                        md:flex-[0_0_25%]
+                        lg:flex-[0_0_16.666%]
+                        px-2
                       "
                     >
                       <div
                         className="
-                        bg-white
-                        rounded-3xl
-                        border
-                        border-gray-100
-                        shadow-sm
-                        p-5
-                        text-center
-                        hover:-translate-y-1
-                        hover:shadow-lg
-                        transition-all
-                        duration-300
-                        "
+                          bg-white
+                          dark:bg-slate-800
+                          rounded-3xl
+                          border
+                          border-gray-100
+                          dark:border-slate-700
+                          shadow-sm
+                          p-2 sm:p-4
+                          text-center
+                          hover:-translate-y-1
+                          hover:shadow-lg
+                          transition-all
+                          duration-300
+                          mt-1
+                          "
                       >
-                        <p className="text-sm text-gray-500">{hour.time}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {hour.time}
+                        </p>
 
                         <Icon
                           icon={hour.icon}
                           className="
-                          text-5xl
-                          text-yellow-500
-                          mx-auto
-                          my-4
-                          "
+                            text-3xl sm:text-5xl
+                            text-yellow-500
+                            mx-auto
+                            my-4
+                            "
                         />
 
                         <h3
                           className="
-                          text-2xl
-                          font-bold
-                          text-gray-800
-                          "
+                            text-2xl
+                            font-bold
+                            text-gray-800
+                            dark:text-white
+                            "
                         >
                           {hour.temp}
                         </h3>
@@ -554,32 +501,31 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
     </div>
   );
 }
+
 function InfoCard({ title, value, icon }) {
   return (
     <div
       className="
       bg-white
+      dark:bg-slate-800
       rounded-3xl
       p-5
       flex
       items-center
       justify-between
       shadow-sm
+      border
+      border-gray-100
+      dark:border-slate-700
       "
     >
       <div>
         <p className="text-gray-400 text-sm">{title}</p>
 
-        <p className="font-bold text-xl">{value}</p>
+        <p className="font-bold text-xl dark:text-white">{value}</p>
       </div>
 
-      <Icon
-        icon={icon}
-        className="
-        text-4xl
-        text-yellow-500
-        "
-      />
+      <Icon icon={icon} className="text-4xl text-yellow-500" />
     </div>
   );
 }
@@ -589,8 +535,12 @@ function InfoBox({ title, value }) {
     <div
       className="
       bg-white
+      dark:bg-slate-800
       rounded-3xl
       p-5
+      border
+      border-gray-100
+      dark:border-slate-700
       "
     >
       <p className="text-gray-400">{title}</p>
