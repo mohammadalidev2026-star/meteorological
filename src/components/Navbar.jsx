@@ -1,33 +1,14 @@
 // src/components/Navbar.jsx
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { NavLink } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 function Navbar() {
-  const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    const theme = localStorage.getItem("theme");
-
-    if (theme === "dark") {
-      document.documentElement.classList.add("dark");
-      setDarkMode(true);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    if (darkMode) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-      setDarkMode(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-      setDarkMode(true);
-    }
-  };
+  const { darkMode, toggleTheme } = useTheme();
 
   const menuItems = [
     {
@@ -61,6 +42,8 @@ function Navbar() {
       border-b
       border-gray-200
       dark:border-slate-800
+      transition-all
+      duration-300
       "
     >
       <nav
@@ -87,6 +70,7 @@ function Navbar() {
             flex
             items-center
             justify-center
+            shadow-sm
             "
           >
             <Icon
@@ -98,19 +82,17 @@ function Navbar() {
             />
           </div>
 
-          <div>
-            <h1
-              className="
-              text-xl
-              md:text-2xl
-              font-extrabold
-              text-gray-800
-              dark:text-white
-              "
-            >
-              هواشناسی افغانستان
-            </h1>
-          </div>
+          <h1
+            className="
+            text-xl
+            md:text-2xl
+            font-extrabold
+            text-gray-800
+            dark:text-white
+            "
+          >
+            هواشناسی افغانستان
+          </h1>
         </div>
 
         {/* Desktop Menu */}
@@ -158,7 +140,7 @@ function Navbar() {
           gap-3
           "
         >
-          {/* Dark Mode */}
+          {/* Theme Button */}
 
           <button
             onClick={toggleTheme}
@@ -172,12 +154,15 @@ function Navbar() {
             items-center
             justify-center
             hover:scale-110
-            transition
+            transition-all
+            duration-300
             "
           >
             <Icon
               icon={
-                darkMode ? "solar:sun-bold-duotone" : "solar:moon-bold-duotone"
+                darkMode
+                  ? "solar:sun-bold-duotone"
+                  : "solar:moon-stars-bold-duotone"
               }
               className="
               text-3xl
@@ -186,7 +171,7 @@ function Navbar() {
             />
           </button>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu */}
 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -249,18 +234,19 @@ function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   `
-                  px-5
-                  py-3
-                  rounded-2xl
-                  font-semibold
-                  transition
+                px-5
+                py-3
+                rounded-2xl
+                font-semibold
+                transition
 
-                  ${
-                    isActive
-                      ? "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-500"
-                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800"
-                  }
-                  `
+                ${
+                  isActive
+                    ? "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-500"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800"
+                }
+
+                `
                 }
               >
                 {item.name}
