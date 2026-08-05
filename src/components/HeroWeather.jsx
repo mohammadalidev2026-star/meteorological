@@ -1,6 +1,10 @@
 import { Icon } from "@iconify/react";
+import weatherData from "../data/weatherData";
 
-function HeroWeather() {
+function HeroWeather({ city = "هرات" }) {
+  const weather =
+    weatherData.find((item) => item.city === city) || weatherData[0];
+
   return (
     <section
       className="
@@ -25,7 +29,6 @@ function HeroWeather() {
       duration-300
       "
     >
-      {/* Background Glow */}
       <div
         className="
         absolute
@@ -52,17 +55,46 @@ function HeroWeather() {
         "
       />
 
-      <div className="relative flex flex-col md:flex-row items-center justify-between gap-10">
-        {/* Left */}
+      <div
+        className="
+        relative
+        flex
+        flex-col
+        md:flex-row
+        items-center
+        justify-between
+        gap-10
+        "
+      >
+        {/* اطلاعات */}
+
         <div className="text-center md:text-right">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+          <div
+            className="
+            flex
+            items-center
+            justify-center
+            md:justify-start
+            gap-2
+            mb-4
+            "
+          >
             <Icon
               icon="solar:location-bold-duotone"
-              className="text-3xl text-yellow-300"
+              className="
+              text-3xl
+              text-yellow-300
+              "
             />
 
-            <span className="text-lg font-medium text-white/95">
-              هرات، افغانستان
+            <span
+              className="
+              text-lg
+              font-medium
+              text-white/95
+              "
+            >
+              {city}، افغانستان
             </span>
           </div>
 
@@ -76,15 +108,24 @@ function HeroWeather() {
             drop-shadow-lg
             "
           >
-            28°
+            {weather.temperature}
           </h1>
 
-          <p className="mt-4 text-2xl md:text-3xl font-semibold text-white/95">
-            آفتابی
+          <p
+            className="
+            mt-4
+            text-2xl
+            md:text-3xl
+            font-semibold
+            text-white/95
+            "
+          >
+            {weather.condition}
           </p>
         </div>
 
-        {/* Right */}
+        {/* آیکن هوا */}
+
         <div className="relative">
           <div
             className="
@@ -98,7 +139,7 @@ function HeroWeather() {
           />
 
           <Icon
-            icon="solar:sun-2-bold-duotone"
+            icon={weather.icon || "solar:sun-2-bold-duotone"}
             className="
             relative
             text-[150px]

@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+
+import SearchCity from "../components/SearchCity";
 import HeroWeather from "../components/HeroWeather";
 import WeatherStats from "../components/WeatherStats";
 import TodaySummary from "../components/TodaySummary";
@@ -5,6 +8,24 @@ import HourlyForecast from "../components/HourlyForecast";
 import TenDaysForecast from "../components/TenDaysForecast";
 
 function Home() {
+  const [selectedCity, setSelectedCity] = useState("هرات");
+
+  // گرفتن شهر انتخاب شده از Favorites
+
+  useEffect(() => {
+    const savedCity = localStorage.getItem("selectedCity");
+
+    if (savedCity) {
+      setSelectedCity(savedCity);
+    }
+  }, []);
+
+  function changeCity(city) {
+    setSelectedCity(city);
+
+    localStorage.setItem("selectedCity", city);
+  }
+
   return (
     <main
       className="
@@ -24,15 +45,21 @@ function Home() {
         space-y-8
         "
       >
-        <HeroWeather />
+        {/* Search */}
 
-        <WeatherStats />
+        <SearchCity onSelect={changeCity} />
 
-        <TodaySummary />
+        {/* Weather */}
 
-        <HourlyForecast />
+        <HeroWeather city={selectedCity} />
 
-        <TenDaysForecast />
+        <WeatherStats city={selectedCity} />
+
+        <TodaySummary city={selectedCity} />
+
+        <HourlyForecast city={selectedCity} />
+
+        <TenDaysForecast city={selectedCity} />
       </div>
     </main>
   );

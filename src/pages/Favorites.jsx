@@ -1,35 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
-
-const initialFavorites = [
-  {
-    id: 1,
-    city: "هرات",
-    temperature: "34°",
-    condition: "آفتابی",
-    icon: "solar:sun-bold-duotone",
-  },
-  {
-    id: 2,
-    city: "کابل",
-    temperature: "27°",
-    condition: "کمی ابری",
-    icon: "solar:cloud-sun-bold-duotone",
-  },
-  {
-    id: 3,
-    city: "مزار شریف",
-    temperature: "31°",
-    condition: "صاف",
-    icon: "solar:sun-bold-duotone",
-  },
-];
+import { useNavigate } from "react-router-dom";
+import weatherData from "../data/weatherData";
 
 function Favorites() {
-  const [favorites, setFavorites] = useState(initialFavorites);
+  const [favorites, setFavorites] = useState([]);
 
-  function removeCity(id) {
-    setFavorites(favorites.filter((item) => item.id !== id));
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    setFavorites(savedFavorites);
+  }, []);
+
+  function removeCity(cityName) {
+    const updatedFavorites = favorites.filter((item) => item.city !== cityName);
+
+    setFavorites(updatedFavorites);
+
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  }
+
+  function openCity(city) {
+    localStorage.setItem("selectedCity", city);
+
+    navigate("/");
   }
 
   return (
@@ -44,8 +40,14 @@ function Favorites() {
       duration-300
       "
     >
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* عنوان */}
+      <div
+        className="
+        max-w-6xl
+        mx-auto
+        space-y-8
+        "
+      >
+        {/* Header */}
 
         <section
           className="
@@ -73,42 +75,52 @@ function Favorites() {
               "
             >
               <Icon
-                icon="solar:heart-bold-duotone"
-                className="text-5xl text-yellow-500"
+                icon="solar:star-bold-duotone"
+                className="
+                text-5xl
+                text-yellow-500
+                "
               />
             </div>
 
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+              <h1
+                className="
+                text-3xl
+                font-bold
+                text-gray-800
+                dark:text-white
+                "
+              >
                 شهرهای مورد علاقه
               </h1>
 
-              <p className="text-gray-500 dark:text-gray-400 mt-2">
-                وضعیت آب‌وهوای شهرهای ذخیره شده
+              <p
+                className="
+                text-gray-500
+                dark:text-gray-400
+                mt-2
+                "
+              >
+                شهرهای ذخیره شده شما
               </p>
             </div>
           </div>
         </section>
 
-        {/* اگر لیست خالی بود */}
-
         {favorites.length === 0 ? (
-          <div
+          <section
             className="
             bg-white
             dark:bg-slate-900
             rounded-3xl
-            border
-            border-gray-100
-            dark:border-slate-700
             shadow-sm
-            py-20
-            px-6
+            p-10
             text-center
             "
           >
             <Icon
-              icon="solar:heart-broken-bold-duotone"
+              icon="solar:star-fall-bold-duotone"
               className="
               text-7xl
               text-yellow-500
@@ -117,92 +129,171 @@ function Favorites() {
               "
             />
 
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
-              هیچ شهری ذخیره نشده است
+            <h2
+              className="
+              text-2xl
+              font-bold
+              text-gray-800
+              dark:text-white
+              "
+            >
+              هنوز شهری اضافه نشده است
             </h2>
-
-            <p className="text-gray-500 dark:text-gray-400 mt-3">
-              شهرهای مورد علاقه خود را اضافه کنید.
-            </p>
-          </div>
+          </section>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {favorites.map((city) => (
-              <div
-                key={city.id}
-                className="
-                bg-white
-                dark:bg-slate-900
-                rounded-3xl
-                border
-                border-gray-100
-                dark:border-slate-700
-                shadow-sm
-                p-6
-                hover:-translate-y-1
-                hover:shadow-xl
-                transition-all
-                duration-300
-                "
-              >
-                <div className="flex items-center justify-between">
+          <div
+            className="
+            grid
+            md:grid-cols-2
+            lg:grid-cols-3
+            gap-6
+            "
+          >
+            {favorites.map((city) => {
+              const weather =
+                weatherData.find((item) => item.city === city.city) || {};
+
+              return (
+                <div
+                  key={city.city}
+                  onClick={() => openCity(city.city)}
+                  className="
+                  cursor-pointer
+                  bg-white
+                  dark:bg-slate-900
+                  rounded-3xl
+                  border
+                  border-gray-100
+                  dark:border-slate-700
+                  shadow-sm
+                  p-6
+                  hover:-translate-y-1
+                  hover:shadow-xl
+                  transition-all
+                  duration-300
+                  "
+                >
                   <div
                     className="
-                    w-14
-                    h-14
-                    rounded-2xl
-                    bg-yellow-100
-                    dark:bg-yellow-500/10
                     flex
                     items-center
-                    justify-center
+                    justify-between
                     "
                   >
-                    <Icon
-                      icon={city.icon}
-                      className="text-4xl text-yellow-500"
-                    />
+                    <div
+                      className="
+                      w-14
+                      h-14
+                      rounded-2xl
+                      bg-yellow-100
+                      dark:bg-yellow-500/10
+                      flex
+                      items-center
+                      justify-center
+                      "
+                    >
+                      <Icon
+                        icon={weather.icon || "solar:star-bold-duotone"}
+                        className="
+                        text-4xl
+                        text-yellow-500
+                        "
+                      />
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        removeCity(city.city);
+                      }}
+                      className="
+                      w-11
+                      h-11
+                      rounded-xl
+                      bg-red-50
+                      dark:bg-red-500/10
+                      flex
+                      items-center
+                      justify-center
+                      hover:scale-110
+                      transition-all
+                      "
+                    >
+                      <Icon
+                        icon="
+                        solar:trash-bin-trash-bold-duotone
+                        "
+                        className="
+                        text-2xl
+                        text-red-500
+                        "
+                      />
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() => removeCity(city.id)}
+                  <h2
                     className="
-                    w-11
-                    h-11
-                    rounded-xl
-                    bg-red-50
-                    dark:bg-red-500/10
-                    flex
-                    items-center
-                    justify-center
-                    hover:scale-110
-                    transition-all
+                    text-2xl
+                    font-bold
+                    text-gray-800
+                    dark:text-white
+                    mt-6
                     "
                   >
-                    <Icon
-                      icon="solar:trash-bin-trash-bold-duotone"
-                      className="text-2xl text-red-500"
-                    />
-                  </button>
+                    {city.city}
+                  </h2>
+
+                  <p
+                    className="
+                    text-gray-500
+                    dark:text-gray-400
+                    mt-2
+                    "
+                  >
+                    {weather.condition || "آب‌وهوای امروز"}
+                  </p>
+
+                  <div
+                    className="
+                    mt-8
+                    flex
+                    items-center
+                    justify-between
+                    "
+                  >
+                    <span
+                      className="
+                      text-gray-500
+                      dark:text-gray-400
+                      "
+                    >
+                      دما
+                    </span>
+
+                    <span
+                      className="
+                      text-3xl
+                      font-bold
+                      text-yellow-500
+                      "
+                    >
+                      {weather.temperature || "--°"}
+                    </span>
+                  </div>
+
+                  <div
+                    className="
+                    mt-5
+                    text-sm
+                    text-yellow-500
+                    "
+                  >
+                    برای مشاهده آب‌وهوا کلیک کنید
+                  </div>
                 </div>
-
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-white mt-6">
-                  {city.city}
-                </h2>
-
-                <p className="text-gray-500 dark:text-gray-400 mt-2">
-                  {city.condition}
-                </p>
-
-                <div className="mt-8 flex items-center justify-between">
-                  <span className="text-gray-500 dark:text-gray-400">دما</span>
-
-                  <span className="text-3xl font-bold text-yellow-500">
-                    {city.temperature}
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

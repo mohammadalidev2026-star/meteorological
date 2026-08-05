@@ -1,35 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { Icon } from "@iconify/react";
+import weatherData from "../data/weatherData";
 
-const hourlyData = [
-  { time: "00:00", temp: "20°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "01:00", temp: "19°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "02:00", temp: "19°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "03:00", temp: "18°", icon: "solar:cloud-bold-duotone" },
-  { time: "04:00", temp: "17°", icon: "solar:cloud-bold-duotone" },
-  { time: "05:00", temp: "17°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "06:00", temp: "18°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "07:00", temp: "20°", icon: "solar:sun-bold-duotone" },
-  { time: "08:00", temp: "22°", icon: "solar:sun-bold-duotone" },
-  { time: "09:00", temp: "24°", icon: "solar:sun-bold-duotone" },
-  { time: "10:00", temp: "26°", icon: "solar:sun-bold-duotone" },
-  { time: "11:00", temp: "27°", icon: "solar:sun-bold-duotone" },
-  { time: "12:00", temp: "28°", icon: "solar:sun-bold-duotone" },
-  { time: "13:00", temp: "30°", icon: "solar:sun-bold-duotone" },
-  { time: "14:00", temp: "31°", icon: "solar:sun-bold-duotone" },
-  { time: "15:00", temp: "32°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "16:00", temp: "31°", icon: "solar:cloud-sun-bold-duotone" },
-  { time: "17:00", temp: "29°", icon: "solar:cloud-bold-duotone" },
-  { time: "18:00", temp: "27°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "19:00", temp: "25°", icon: "solar:cloud-rain-bold-duotone" },
-  { time: "20:00", temp: "24°", icon: "solar:cloud-bold-duotone" },
-  { time: "21:00", temp: "23°", icon: "solar:cloud-bold-duotone" },
-  { time: "22:00", temp: "22°", icon: "solar:cloud-bold-duotone" },
-  { time: "23:00", temp: "21°", icon: "solar:cloud-rain-bold-duotone" },
-];
+export default function HourlyForecast({ city = "هرات" }) {
+  const weather =
+    weatherData.find((item) => item.city === city) || weatherData[0];
 
-export default function HourlyForecast() {
+  const hourlyData = weather.hourly || [];
+
   const [emblaRef, emblaApi] = useEmblaCarousel({
     direction: "rtl",
     align: "start",
@@ -45,6 +24,7 @@ export default function HourlyForecast() {
     if (!emblaApi) return;
 
     setCanPrev(emblaApi.canScrollPrev());
+
     setCanNext(emblaApi.canScrollNext());
   }, [emblaApi]);
 
@@ -54,10 +34,12 @@ export default function HourlyForecast() {
     onSelect();
 
     emblaApi.on("select", onSelect);
+
     emblaApi.on("reInit", onSelect);
 
     return () => {
       emblaApi.off("select", onSelect);
+
       emblaApi.off("reInit", onSelect);
     };
   }, [emblaApi, onSelect]);
@@ -72,8 +54,6 @@ export default function HourlyForecast() {
 
   return (
     <section className="mt-8">
-      {/* Title */}
-
       <div className="flex items-center gap-3 mb-5">
         <div
           className="
@@ -104,13 +84,11 @@ export default function HourlyForecast() {
           dark:text-white
           "
         >
-          پیش‌بینی ساعتی
+          پیش‌بینی ساعتی {city}
         </h2>
       </div>
 
       <div className="relative">
-        {/* Previous Button */}
-
         <button
           onClick={scrollPrev}
           disabled={!canPrev}
@@ -134,8 +112,8 @@ export default function HourlyForecast() {
 
           ${
             canPrev
-              ? "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 hover:bg-yellow-100 dark:hover:bg-slate-800"
-              : "bg-gray-200 dark:bg-slate-800 border-gray-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
+              ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+              : "bg-gray-200 dark:bg-slate-700 border-gray-200 dark:border-gray-600"
           }
           `}
         >
@@ -147,8 +125,6 @@ export default function HourlyForecast() {
             "
           />
         </button>
-
-        {/* Next Button */}
 
         <button
           onClick={scrollNext}
@@ -173,8 +149,8 @@ export default function HourlyForecast() {
 
           ${
             canNext
-              ? "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 hover:bg-yellow-100 dark:hover:bg-slate-800"
-              : "bg-gray-200 dark:bg-slate-800 border-gray-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
+              ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
+              : "bg-gray-200 dark:bg-slate-700 border-gray-200 dark:border-gray-600"
           }
           `}
         >
@@ -186,8 +162,6 @@ export default function HourlyForecast() {
             "
           />
         </button>
-
-        {/* Slider */}
 
         <div
           className="
@@ -224,7 +198,7 @@ export default function HourlyForecast() {
                   hover:shadow-xl
                   transition-all
                   duration-300
-                  mt-1
+                  my-1
                   "
                 >
                   <p
