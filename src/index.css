@@ -10,20 +10,88 @@
 
 html {
   direction: rtl;
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
+
   font-family: "Vazirmatn", "IRANSans", "Segoe UI", sans-serif;
-  background: #f4f8f7;
+
+  background-color: #f8fafc;
   color: #1f2937;
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
 }
 
+html.dark body {
+  background-color: #020617;
+  color: #f8fafc;
+}
+
 button {
   cursor: pointer;
+  font-family: inherit;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+::selection {
+  background-color: #facc15;
+  color: #111827;
+}
+
+html.dark ::selection {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark Scrollbar */
+
+html.dark ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -33,4 +101,19 @@ button {
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #facc15;
+  outline-offset: 2px;
+}
+
+html.dark button:focus-visible,
+html.dark input:focus-visible,
+html.dark textarea:focus-visible,
+html.dark select:focus-visible {
+  outline-color: #60a5fa;
 }

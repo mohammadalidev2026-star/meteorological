@@ -16,10 +16,14 @@ function SearchCity({ onSelect }) {
   }, []);
 
   const filteredCities = useMemo(() => {
-    if (!search.trim()) return [];
+    const value = search.trim().toLowerCase();
+
+    if (!value) {
+      return [];
+    }
 
     return afghanistanCities.filter((city) =>
-      city.toLowerCase().includes(search.toLowerCase()),
+      city.name.toLowerCase().includes(value),
     );
   }, [search]);
 
@@ -48,27 +52,30 @@ function SearchCity({ onSelect }) {
   }, []);
 
   function selectCity(city) {
-    onSelect?.(city);
+    if (!city) return;
+
+    onSelect?.(city.name);
+
+    localStorage.setItem("selectedCity", city.name);
 
     setSearch("");
-
     setOpen(false);
   }
 
   function toggleFavorite(city) {
+    if (!city) return;
+
+    const exists = favorites.some((item) => item.city === city.name);
+
     let updatedFavorites;
 
-    const exists = favorites.some((item) => item.city === city);
-
     if (exists) {
-      updatedFavorites = favorites.filter((item) => item.city !== city);
+      updatedFavorites = favorites.filter((item) => item.city !== city.name);
     } else {
       updatedFavorites = [
         ...favorites,
         {
-          city,
-          temperature: "--°",
-          condition: "در حال دریافت اطلاعات",
+          city: city.name,
         },
       ];
     }
@@ -79,171 +86,309 @@ function SearchCity({ onSelect }) {
   }
 
   function isFavorite(city) {
-    return favorites.some((item) => item.city === city);
+    return favorites.some((item) => item.city === city.name);
+  }
+
+  function clearSearch() {
+    setSearch("");
+    setOpen(false);
   }
 
   return (
     <div
       ref={wrapperRef}
       className="
-      relative
-      w-full
-      max-w-xl
-      mx-auto
+        relative
+        w-full
       "
-      dir="rtl"
     >
       <div
         className="
-        flex
-        items-center
-        gap-3
-        h-16
-        px-5
-        rounded-3xl
-        bg-white
-        dark:bg-slate-900
-        border
-        border-slate-200
-        dark:border-slate-700
-        shadow-sm
-        transition-all
-        duration-300
-        focus-within:ring-2
-        focus-within:ring-yellow-400/40
+          w-full
+          h-14
+          px-5
+          rounded-3xl
+          bg-white
+          dark:bg-slate-900
+          border
+          border-gray-200
+          dark:border-slate-700
+          shadow-sm
+          flex
+          items-center
+          gap-3
+          transition-all
+          duration-300
+          focus-within:border-yellow-400
+          dark:focus-within:border-blue-400
+          focus-within:shadow-lg
         "
       >
+        {/* Search Icon */}
+
         <Icon
           icon="solar:magnifer-bold-duotone"
           className="
-          text-3xl
-          text-yellow-500
+            shrink-0
+
+            text-2xl
+
+            text-gray-400
+            dark:text-gray-500
           "
         />
+
+        {/* Input */}
 
         <input
           value={search}
-          onFocus={() => setOpen(true)}
-          onChange={(e) => {
-            setSearch(e.target.value);
-
+          onFocus={() => {
+            if (search.trim()) {
+              setOpen(true);
+            }
+          }}
+          onChange={(event) => {
+            setSearch(event.target.value);
             setOpen(true);
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && filteredCities.length > 0) {
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && filteredCities.length > 0) {
               selectCity(filteredCities[0]);
+            }
+
+            if (event.key === "Escape") {
+              clearSearch();
             }
           }}
           placeholder="جستجوی شهر..."
+          aria-label="جستجوی شهر"
           className="
-          flex-1
-          bg-transparent
-          outline-none
-          text-lg
-          text-gray-800
-          dark:text-white
-          placeholder:text-gray-400
+            flex-1
+
+            min-w-0
+
+            bg-transparent
+            outline-none
+
+            text-lg
+
+            text-gray-800
+            dark:text-white
+
+            placeholder:text-gray-400
+            dark:placeholder:text-gray-500
           "
         />
 
+        {/* Clear Button */}
+
         {search && (
           <button
-            onClick={() => {
-              setSearch("");
+            type="button"
+            onClick={clearSearch}
+            aria-label="پاک کردن جستجو"
+            className="
+              shrink-0
 
-              setOpen(false);
-            }}
+              w-9
+              h-9
+
+              rounded-full
+
+              flex
+              items-center
+              justify-center
+
+              hover:bg-gray-100
+              dark:hover:bg-slate-800
+
+              transition-all
+            "
           >
             <Icon
               icon="solar:close-circle-bold-duotone"
               className="
-              text-2xl
-              text-gray-400
-              hover:text-red-500
-              transition
+                text-2xl
+
+                text-gray-400
+                hover:text-red-500
+
+                transition
               "
             />
           </button>
         )}
       </div>
 
-      {open && search && (
+      {open && search.trim() && (
         <div
           className="
-          absolute
-          top-18
-          w-full
-          bg-white
-          dark:bg-slate-900
-          rounded-3xl
-          border
-          border-slate-200
-          dark:border-slate-700
-          shadow-2xl
-          max-h-80
-          overflow-y-auto
-          z-50
+            absolute
+
+            top-[calc(100%+8px)]
+            right-0
+
+            w-full
+
+            bg-white
+            dark:bg-slate-900
+
+            rounded-3xl
+
+            border
+            border-slate-200
+            dark:border-slate-700
+
+            shadow-2xl
+
+            max-h-80
+
+            overflow-y-auto
+
+            z-50
+
+            p-2
           "
         >
           {filteredCities.length > 0 ? (
-            filteredCities.map((city) => (
-              <div
-                key={city}
-                className="
-                flex
-                items-center
-                justify-between
-                px-5
-                py-4
-                hover:bg-yellow-50
-                dark:hover:bg-slate-800
-                transition-all
-                "
-              >
-                <button
-                  onClick={() => selectCity(city)}
-                  className="
-                  flex-1
-                  text-right
-                  text-gray-800
-                  dark:text-white
-                  "
-                >
-                  {city}
-                </button>
+            filteredCities.map((city) => {
+              const favorite = isFavorite(city);
 
-                <button
-                  onClick={() => toggleFavorite(city)}
+              return (
+                <div
+                  key={city.name}
                   className="
-                  mr-4
-                  hover:scale-110
-                  transition-all
+                    flex
+                    items-center
+                    gap-2
+
+                    px-2
+                    py-2
+
+                    rounded-2xl
+
+                    hover:bg-yellow-50
+                    dark:hover:bg-slate-800
+
+                    transition-all
+                    duration-200
                   "
                 >
-                  <Icon
-                    icon={
-                      isFavorite(city)
-                        ? "solar:star-bold-duotone"
-                        : "solar:star-linear"
+                  {/* City */}
+
+                  <button
+                    type="button"
+                    onClick={() => selectCity(city)}
+                    className="
+                      flex-1
+
+                      min-w-0
+
+                      px-3
+                      py-3
+
+                      rounded-2xl
+
+                      text-right
+
+                      text-gray-800
+                      dark:text-white
+
+                      font-semibold
+
+                      hover:text-yellow-600
+                      dark:hover:text-blue-400
+
+                      transition-all
+                    "
+                  >
+                    <span>{city.name}</span>
+                  </button>
+
+                  {/* Favorite */}
+
+                  <button
+                    type="button"
+                    onClick={() => toggleFavorite(city)}
+                    aria-label={
+                      favorite
+                        ? `حذف ${city.name} از شهرهای محبوب`
+                        : `افزودن ${city.name} به شهرهای محبوب`
                     }
-                    className={`
-                    text-3xl
-                    ${isFavorite(city) ? "text-yellow-500" : "text-gray-400"}
-                    `}
-                  />
-                </button>
-              </div>
-            ))
+                    className="
+                      shrink-0
+
+                      w-11
+                      h-11
+
+                      rounded-xl
+
+                      flex
+                      items-center
+                      justify-center
+
+                      hover:bg-white
+                      dark:hover:bg-slate-700
+
+                      hover:scale-110
+
+                      transition-all
+                    "
+                  >
+                    <Icon
+                      icon={
+                        favorite
+                          ? "solar:star-bold-duotone"
+                          : "solar:star-linear"
+                      }
+                      className={`
+                        text-3xl
+
+                        transition-all
+
+                        ${
+                          favorite
+                            ? "text-yellow-500"
+                            : "text-gray-400 dark:text-gray-500"
+                        }
+                      `}
+                    />
+                  </button>
+                </div>
+              );
+            })
           ) : (
             <div
               className="
-              py-5
-              text-center
-              text-gray-500
-              dark:text-gray-400
+                py-8
+                px-4
+
+                text-center
               "
             >
-              شهری پیدا نشد.
+              <Icon
+                icon="solar:magnifer-broken"
+                className="
+                  text-5xl
+
+                  text-gray-300
+                  dark:text-slate-600
+
+                  mx-auto
+                  mb-3
+                "
+              />
+
+              <p
+                className="
+                  text-gray-500
+                  dark:text-gray-400
+
+                  font-medium
+                "
+              >
+                شهری پیدا نشد.
+              </p>
             </div>
           )}
         </div>

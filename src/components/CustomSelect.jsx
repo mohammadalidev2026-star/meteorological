@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 
-function CustomSelect({ value, options, onChange }) {
+function CustomSelect({ value, options = [], onChange }) {
   const [open, setOpen] = useState(false);
 
   const ref = useRef(null);
@@ -15,34 +15,84 @@ function CustomSelect({ value, options, onChange }) {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
+  function handleSelect(item) {
+    onChange(item);
+    setOpen(false);
+  }
+
   return (
-    <div ref={ref} className="relative w-52">
+    <div
+      ref={ref}
+      className="
+        relative
+        w-full
+        sm:w-52
+      "
+    >
       <button
-        onClick={() => setOpen(!open)}
-        className="
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-expanded={open}
+        className={`
           w-full
           h-14
+
           px-5
-          rounded-3xl
+
+          rounded-2xl
+
           bg-slate-100
           dark:bg-slate-800
+
           border
-          border-slate-200
-          dark:border-slate-700
+
+          ${
+            open
+              ? `
+                border-yellow-400
+                dark:border-blue-500
+                ring-2
+                ring-yellow-100
+                dark:ring-blue-500/20
+              `
+              : `
+                border-slate-200
+                dark:border-slate-700
+              `
+          }
+
           hover:border-yellow-400
-          transition-all
-          duration-300
+          dark:hover:border-blue-500
+
           flex
           items-center
           justify-between
+          gap-3
+
           shadow-sm
-          hover:shadow-lg
-        "
+          hover:shadow-md
+
+          transition-all
+          duration-300
+
+          focus:outline-none
+        `}
       >
-        <span className="font-semibold text-gray-800 dark:text-white">
+        <span
+          className="
+            font-semibold
+
+            text-gray-800
+            dark:text-white
+
+            truncate
+          "
+        >
           {value}
         </span>
 
@@ -50,9 +100,15 @@ function CustomSelect({ value, options, onChange }) {
           icon="solar:alt-arrow-down-bold-duotone"
           className={`
             text-2xl
+
             text-yellow-500
+            dark:text-blue-400
+
+            shrink-0
+
             transition-transform
             duration-300
+
             ${open ? "rotate-180" : ""}
           `}
         />
@@ -61,77 +117,150 @@ function CustomSelect({ value, options, onChange }) {
       <div
         className={`
           absolute
-          top-15
-          left-0
+
+          top-full
+          right-0
+
+          mt-2
+
           w-full
+
+          z-[100]
+
           origin-top
+
           transition-all
           duration-300
-          z-50
 
           ${
             open
-              ? "opacity-100 scale-100 visible"
-              : "opacity-0 scale-95 invisible"
+              ? `
+                opacity-100
+                scale-100
+                visible
+                translate-y-0
+              `
+              : `
+                opacity-0
+                scale-95
+                invisible
+                -translate-y-2
+              `
           }
         `}
       >
         <div
           className="
-            rounded-3xl
+            rounded-2xl
+
             border
             border-slate-200
             dark:border-slate-700
-            bg-white/95
-            dark:bg-slate-900/95
-            backdrop-blur-xl
+
+            bg-white
+            dark:bg-slate-900
+
             shadow-2xl
+
             p-2
 
-            max-h-64
+            max-h-72
+
             overflow-y-auto
 
+            overscroll-contain
+
             scrollbar-thin
-            scrollbar-thumb-yellow-400
-            scrollbar-track-transparent
+            scrollbar-thumb-slate-300
+            dark:scrollbar-thumb-slate-600
           "
         >
-          {options.map((item) => (
-            <button
-              key={item}
-              onClick={() => {
-                onChange(item);
-                setOpen(false);
-              }}
-              className={`
-                w-full
+          {options.length > 0 ? (
+            options.map((item) => {
+              const selected = value === item;
+
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => handleSelect(item)}
+                  className={`
+                    w-full
+
+                    px-4
+                    py-3
+
+                    rounded-xl
+
+                    text-right
+
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+
+                    transition-all
+                    duration-200
+
+                    ${
+                      selected
+                        ? `
+                          bg-yellow-100
+                          dark:bg-blue-500/10
+
+                          text-yellow-600
+                          dark:text-blue-400
+
+                          font-semibold
+                        `
+                        : `
+                          text-gray-700
+                          dark:text-gray-200
+
+                          hover:bg-slate-100
+                          dark:hover:bg-slate-800
+
+                          hover:text-yellow-600
+                          dark:hover:text-blue-400
+                        `
+                    }
+                  `}
+                >
+                  <span className="truncate">{item}</span>
+
+                  {selected && (
+                    <Icon
+                      icon="solar:check-circle-bold-duotone"
+                      className="
+                        text-2xl
+
+                        text-yellow-500
+                        dark:text-blue-400
+
+                        shrink-0
+                      "
+                    />
+                  )}
+                </button>
+              );
+            })
+          ) : (
+            <p
+              className="
                 px-4
                 py-3
-                rounded-2xl
-                text-right
-                transition-all
-                duration-200
-                flex
-                items-center
-                justify-between
 
-                ${
-                  value === item
-                    ? "bg-yellow-100 dark:bg-yellow-500/15 text-yellow-600"
-                    : "hover:bg-slate-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-200"
-                }
-              `}
+                text-center
+
+                text-sm
+
+                text-gray-500
+                dark:text-gray-400
+              "
             >
-              <span>{item}</span>
-
-              {value === item && (
-                <Icon
-                  icon="solar:check-circle-bold-duotone"
-                  className="text-2xl text-yellow-500"
-                />
-              )}
-            </button>
-          ))}
+              گزینه‌ای موجود نیست
+            </p>
+          )}
         </div>
       </div>
     </div>
