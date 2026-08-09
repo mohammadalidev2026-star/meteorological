@@ -110,6 +110,7 @@ function SearchCity({ onSelect }) {
           rounded-3xl
           bg-white
           dark:bg-slate-900
+          focus-within:border-2
           border
           border-gray-200
           dark:border-slate-700
@@ -139,7 +140,6 @@ function SearchCity({ onSelect }) {
         />
 
         {/* Input */}
-
         <input
           value={search}
           onFocus={() => {
@@ -164,17 +164,17 @@ function SearchCity({ onSelect }) {
           aria-label="جستجوی شهر"
           className="
             flex-1
-
             min-w-0
-
             bg-transparent
+            border-none
             outline-none
-
+            ring-0
+            focus:border-none
+            focus:outline-none
+            focus:ring-0
             text-lg
-
             text-gray-800
             dark:text-white
-
             placeholder:text-gray-400
             dark:placeholder:text-gray-500
           "

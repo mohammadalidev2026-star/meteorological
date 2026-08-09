@@ -42,13 +42,12 @@ function About() {
     >
       <div
         className="
-        max-w-6xl
+        max-w-7xl
         mx-auto
         space-y-6
         "
       >
         {/* Header */}
-
         <section
           className="
           relative
@@ -74,7 +73,7 @@ function About() {
             w-48
             h-48
             rounded-full
-            bg-blue-500/5
+            bg-yellow-500/5
             dark:bg-blue-400/5
             blur-3xl
             "
@@ -97,10 +96,10 @@ function About() {
               h-16
               shrink-0
               rounded-3xl
-              bg-blue-50
+              bg-yellow-50
               dark:bg-blue-500/10
               border
-              border-blue-100
+              border-yellow-100
               dark:border-blue-500/20
               flex
               items-center
@@ -111,7 +110,7 @@ function About() {
                 icon="solar:info-circle-bold-duotone"
                 className="
                 text-5xl
-                text-blue-500
+                text-yellow-500
                 dark:text-blue-400
                 "
               />
@@ -145,7 +144,6 @@ function About() {
         </section>
 
         {/* Introduction */}
-
         <section
           className="
           bg-white
@@ -174,8 +172,11 @@ function About() {
               w-11
               h-11
               rounded-2xl
-              bg-blue-50
+              bg-yellow-50
               dark:bg-blue-500/10
+              border
+              border-yellow-100
+              dark:border-blue-500/20
               flex
               items-center
               justify-center
@@ -185,7 +186,7 @@ function About() {
                 icon="solar:document-text-bold-duotone"
                 className="
                 text-2xl
-                text-blue-500
+                text-yellow-500
                 dark:text-blue-400
                 "
               />
@@ -218,7 +219,6 @@ function About() {
         </section>
 
         {/* Features */}
-
         <section>
           <div className="mb-6">
             <h2
@@ -265,7 +265,7 @@ function About() {
                 p-6
                 hover:-translate-y-1
                 hover:shadow-xl
-                hover:border-blue-200
+                hover:border-yellow-200
                 dark:hover:border-blue-500/30
                 transition-all
                 duration-300
@@ -276,10 +276,10 @@ function About() {
                   w-14
                   h-14
                   rounded-2xl
-                  bg-blue-50
+                  bg-yellow-50
                   dark:bg-blue-500/10
                   border
-                  border-blue-100
+                  border-yellow-100
                   dark:border-blue-500/20
                   flex
                   items-center
@@ -294,7 +294,7 @@ function About() {
                     icon={item.icon}
                     className="
                     text-4xl
-                    text-blue-500
+                    text-yellow-500
                     dark:text-blue-400
                     "
                   />
@@ -327,7 +327,6 @@ function About() {
         </section>
 
         {/* Project Information */}
-
         <section
           className="
           grid
@@ -336,7 +335,6 @@ function About() {
           "
         >
           {/* Technologies */}
-
           <InfoCard
             icon="solar:code-bold-duotone"
             title="تکنولوژی‌های استفاده‌شده"
@@ -369,7 +367,6 @@ function About() {
           </InfoCard>
 
           {/* Project Info */}
-
           <InfoCard
             icon="solar:clipboard-text-bold-duotone"
             title="اطلاعات پروژه"
@@ -404,7 +401,7 @@ function InfoCard({ icon, title, children }) {
       dark:border-slate-800
       shadow-sm
       p-6
-      md:p-7
+      md:p-8
       transition-all
       duration-300
       "
@@ -413,17 +410,20 @@ function InfoCard({ icon, title, children }) {
         className="
         flex
         items-center
-        gap-4
+        gap-3
         mb-6
         "
       >
         <div
           className="
-          w-12
-          h-12
+          w-11
+          h-11
           rounded-2xl
-          bg-blue-50
+          bg-yellow-50
           dark:bg-blue-500/10
+          border
+          border-yellow-100
+          dark:border-blue-500/20
           flex
           items-center
           justify-center
@@ -432,8 +432,8 @@ function InfoCard({ icon, title, children }) {
           <Icon
             icon={icon}
             className="
-            text-3xl
-            text-blue-500
+            text-2xl
+            text-yellow-500
             dark:text-blue-400
             "
           />
@@ -463,20 +463,24 @@ function TechItem({ icon, title }) {
       flex
       items-center
       gap-3
-      p-3
       rounded-2xl
       bg-slate-50
       dark:bg-slate-800
       border
       border-slate-100
       dark:border-slate-700
+      p-3
+      transition-all
+      duration-200
+      hover:border-yellow-200
+      dark:hover:border-blue-500/30
       "
     >
       <Icon
         icon={icon}
         className="
-        text-2xl
-        text-blue-500
+        text-xl
+        text-yellow-500
         dark:text-blue-400
         shrink-0
         "
@@ -508,7 +512,7 @@ function InfoRow({ title, value }) {
       border-b
       border-slate-100
       dark:border-slate-800
-      last:border-0
+      last:border-b-0
       last:pb-0
       "
     >
