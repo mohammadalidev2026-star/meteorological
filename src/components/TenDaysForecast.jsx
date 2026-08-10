@@ -1,193 +1,269 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import ForecastDay from "./ForecastDay";
 import { Icon } from "@iconify/react";
 
-const forecast = [
-  {
-    day: "یکشنبه",
-    icon: "solar:sun-bold-duotone",
-    min: "10°",
-    max: "40°",
-    sunrise: "05:30",
-    sunset: "19:45",
-    humidity: "12%",
-    wind: "12 km/h",
-    feels: "26°",
-    description: "آسمان صاف و آفتابی",
-  },
-  {
-    day: "دوشنبه",
-    icon: "solar:cloud-sun-bold-duotone",
-    min: "12°",
-    max: "37°",
-    sunrise: "05:31",
-    sunset: "19:44",
-    humidity: "18%",
-    wind: "15 km/h",
-    feels: "28°",
-    description: "کمی ابری همراه با آفتاب",
-  },
-  {
-    day: "سه‌شنبه",
-    icon: "solar:cloud-bold-duotone",
-    min: "14°",
-    max: "35°",
-    sunrise: "05:32",
-    sunset: "19:43",
-    humidity: "22%",
-    wind: "10 km/h",
-    feels: "27°",
-    description: "هوای نیمه ابری",
-  },
-  {
-    day: "چهارشنبه",
-    icon: "solar:cloud-rain-bold-duotone",
-    min: "16°",
-    max: "32°",
-    sunrise: "05:33",
-    sunset: "19:42",
-    humidity: "30%",
-    wind: "18 km/h",
-    feels: "25°",
-    description: "احتمال بارندگی",
-  },
-  {
-    day: "پنج‌شنبه",
-    icon: "solar:sun-bold-duotone",
-    min: "13°",
-    max: "38°",
-    sunrise: "05:34",
-    sunset: "19:41",
-    humidity: "15%",
-    wind: "11 km/h",
-    feels: "29°",
-    description: "صاف و گرم",
-  },
-  {
-    day: "جمعه",
-    icon: "solar:cloud-sun-bold-duotone",
-    min: "15°",
-    max: "36°",
-    sunrise: "05:35",
-    sunset: "19:40",
-    humidity: "20%",
-    wind: "14 km/h",
-    feels: "27°",
-    description: "کمی ابری",
-  },
-  {
-    day: "شنبه",
-    icon: "solar:cloud-bold-duotone",
-    min: "11°",
-    max: "33°",
-    sunrise: "05:36",
-    sunset: "19:39",
-    humidity: "25%",
-    wind: "9 km/h",
-    feels: "24°",
-    description: "هوای آرام",
-  },
-  {
-    day: "یکشنبه",
-    icon: "solar:sun-bold-duotone",
-    min: "9°",
-    max: "39°",
-    sunrise: "05:37",
-    sunset: "19:38",
-    humidity: "14%",
-    wind: "13 km/h",
-    feels: "28°",
-    description: "آفتابی",
-  },
-  {
-    day: "دوشنبه",
-    icon: "solar:cloud-rain-bold-duotone",
-    min: "12°",
-    max: "30°",
-    sunrise: "05:38",
-    sunset: "19:37",
-    humidity: "35%",
-    wind: "20 km/h",
-    feels: "23°",
-    description: "بارندگی پراکنده",
-  },
-  {
-    day: "سه‌شنبه",
-    icon: "solar:sun-bold-duotone",
-    min: "14°",
-    max: "37°",
-    sunrise: "05:39",
-    sunset: "19:36",
-    humidity: "17%",
-    wind: "12 km/h",
-    feels: "28°",
-    description: "صاف",
-  },
+function getWeatherIcon(code, time) {
+  const hour = Number(time.slice(11, 13));
+
+  // آسمان صاف
+  if (code === 0) {
+    // شب
+    if (hour >= 19 || hour < 6) {
+      return "solar:moon-bold-duotone";
+    }
+
+    // روز
+    return "solar:sun-bold-duotone";
+  }
+
+  // کمی ابری
+  if ([1, 2].includes(code)) {
+    return "solar:cloud-sun-bold-duotone";
+  }
+
+  // کاملاً ابری
+  if (code === 3) {
+    return "solar:cloud-bold-duotone";
+  }
+
+  // مه
+  if ([45, 48].includes(code)) {
+    return "solar:cloud-fog-bold-duotone";
+  }
+
+  // باران
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+    return "solar:cloud-rain-bold-duotone";
+  }
+
+  // برف
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "solar:cloud-snow-bold-duotone";
+  }
+
+  // طوفان
+  if ([95, 96, 99].includes(code)) {
+    return "solar:cloud-bolt-bold-duotone";
+  }
+
+  return "solar:cloud-bold-duotone";
+}
+
+/* =========================================
+   متن وضعیت آب‌وهوا
+========================================= */
+
+function getWeatherText(code, time) {
+  const hour = Number(time.slice(11, 13));
+
+  // آسمان صاف
+  if (code === 0) {
+    if (hour >= 19 || hour < 6) {
+      return "صاف";
+    }
+
+    return "آفتابی";
+  }
+
+  // کمی ابری
+  if ([1, 2].includes(code)) {
+    return "کمی ابری";
+  }
+
+  // ابری
+  if (code === 3) {
+    return "ابری";
+  }
+
+  // مه
+  if ([45, 48].includes(code)) {
+    return "مه";
+  }
+
+  // باران
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+    return "بارانی";
+  }
+
+  // برف
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "برفی";
+  }
+
+  // طوفان
+  if ([95, 96, 99].includes(code)) {
+    return "طوفانی";
+  }
+
+  return "نامشخص";
+}
+
+/* =========================================
+   نام روزهای هفته
+========================================= */
+
+const weekDays = [
+  "یکشنبه",
+  "دوشنبه",
+  "سه‌شنبه",
+  "چهارشنبه",
+  "پنجشنبه",
+  "جمعه",
+  "شنبه",
 ];
 
-const hourlyData = Array.from({ length: 24 }, (_, index) => ({
-  time: `${String(index).padStart(2, "0")}:00`,
-  temp: `${20 + Math.floor(Math.random() * 13)}°`,
-  icon: index < 6 ? "solar:cloud-bold-duotone" : "solar:sun-bold-duotone",
-}));
+function getDayName(index, date) {
+  if (index === 0) {
+    return "امروز";
+  }
 
-function TenDaysForecast() {
+  const day = new Date(`${date}T12:00:00`).getDay();
+
+  return weekDays[day];
+}
+
+/* =========================================
+   TenDaysForecast
+========================================= */
+
+function TenDaysForecast({ city = "هرات", weather }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showForecast, setShowForecast] = useState(false);
 
+  /* -----------------------------------------
+     بررسی اطلاعات API
+  ----------------------------------------- */
+
+  if (
+    !weather ||
+    !weather.daily ||
+    !weather.hourly ||
+    !weather.daily.time ||
+    !weather.hourly.time
+  ) {
+    return null;
+  }
+
+  /* -----------------------------------------
+     ساخت اطلاعات ۱۰ روز
+  ----------------------------------------- */
+
+  const forecast = useMemo(() => {
+    return weather.daily.time.map((date, index) => {
+      const dailyCode = weather.daily.weather_code?.[index] ?? 0;
+
+      const hourly = weather.hourly.time
+        .map((time, hourIndex) => {
+          if (!time.startsWith(date)) {
+            return null;
+          }
+
+          const code = weather.hourly.weather_code?.[hourIndex] ?? 0;
+
+          return {
+            id: `${date}-${hourIndex}`,
+
+            time: time.slice(11, 16),
+
+            temp:
+              weather.hourly.temperature_2m?.[hourIndex] != null
+                ? `${Math.round(weather.hourly.temperature_2m[hourIndex])}°`
+                : "—",
+
+            code,
+
+            icon: getWeatherIcon(code, time),
+
+            condition: getWeatherText(code, time),
+          };
+        })
+        .filter(Boolean);
+
+      return {
+        date,
+
+        day: getDayName(index, date),
+
+        icon: getWeatherIcon(dailyCode, `${date}T12:00`),
+
+        min:
+          weather.daily.temperature_2m_min?.[index] != null
+            ? `${Math.round(weather.daily.temperature_2m_min[index])}°`
+            : "—",
+
+        max:
+          weather.daily.temperature_2m_max?.[index] != null
+            ? `${Math.round(weather.daily.temperature_2m_max[index])}°`
+            : "—",
+
+        description: getWeatherText(dailyCode, `${date}T12:00`),
+
+        humidity:
+          weather.daily.relative_humidity_2m_max?.[index] != null
+            ? `${Math.round(weather.daily.relative_humidity_2m_max[index])}%`
+            : "—",
+
+        wind:
+          weather.daily.wind_speed_10m_max?.[index] != null
+            ? `${Math.round(weather.daily.wind_speed_10m_max[index])} km/h`
+            : "—",
+
+        feels:
+          weather.daily.apparent_temperature_max?.[index] != null
+            ? `${Math.round(weather.daily.apparent_temperature_max[index])}°`
+            : "—",
+
+        sunrise: weather.daily.sunrise?.[index]
+          ? weather.daily.sunrise[index].slice(11, 16)
+          : "—",
+
+        sunset: weather.daily.sunset?.[index]
+          ? weather.daily.sunset[index].slice(11, 16)
+          : "—",
+
+        hourly,
+      };
+    });
+  }, [weather]);
+
   return (
-    <section className="mt-8">
+    <section className="w-full">
+      {/* =====================================
+          عنوان پیش‌بینی ۱۰ روز
+      ====================================== */}
+
       <button
+        type="button"
         onClick={() => setShowForecast(!showForecast)}
         className="
-        w-full
-        bg-white
-        dark:bg-slate-900
-        rounded-3xl
-        border
-        border-gray-100
-        dark:border-slate-700
-        shadow-sm
-        p-5
-        flex
-        items-center
-        justify-between
-        hover:shadow-lg
-        transition-all
-        duration-300
+          w-full
+          bg-white
+          dark:bg-slate-900
+          rounded-3xl
+          border
+          border-gray-100
+          dark:border-slate-700
+          shadow-sm
+          p-5
+          flex
+          items-center
+          justify-between
+          hover:shadow-lg
+          transition-all
+          duration-300
         "
       >
-        <div className="flex items-center gap-3">
-          <div
-            className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-yellow-100
-            dark:bg-yellow-500/10
-            flex
-            items-center
-            justify-center
-            "
-          >
-            <Icon
-              icon="solar:calendar-bold-duotone"
-              className="text-3xl text-yellow-500"
-            />
-          </div>
-
-          <span
-            className="
+        <span
+          className="
             text-xl
             font-bold
             text-gray-800
             dark:text-white
-            "
-          >
-            پیش‌بینی ۱۰ روز آینده
-          </span>
-        </div>
+          "
+        >
+          پیش‌بینی ۱۰ روز آینده
+        </span>
 
         <Icon
           icon={
@@ -195,36 +271,45 @@ function TenDaysForecast() {
               ? "solar:alt-arrow-up-bold"
               : "solar:alt-arrow-down-bold"
           }
-          className="text-3xl text-yellow-500"
+          className="
+            text-3xl
+            text-yellow-500
+          "
         />
       </button>
 
+      {/* =====================================
+          لیست روزها
+      ====================================== */}
+
       <div
         className={`
-        overflow-hidden
-        transition-all
-        duration-500
+          overflow-hidden
+          transition-all
+          duration-500
 
-        ${
-          showForecast ? "max-h-[5000px] opacity-100 mt-5" : "max-h-0 opacity-0"
-        }
+          ${
+            showForecast
+              ? "max-h-[8000px] opacity-100 mt-5"
+              : "max-h-0 opacity-0"
+          }
         `}
       >
         <div
           className="
-          bg-white
-          dark:bg-slate-900
-          rounded-3xl
-          shadow-sm
-          border
-          border-gray-100
-          dark:border-slate-700
-          overflow-hidden
+            bg-white
+            dark:bg-slate-900
+            rounded-3xl
+            shadow-sm
+            border
+            border-gray-100
+            dark:border-slate-700
+            overflow-hidden
           "
         >
           {forecast.map((item, index) => (
             <DayWeather
-              key={index}
+              key={`${item.date}-${index}`}
               item={item}
               index={index}
               selectedDay={selectedDay}
@@ -237,41 +322,28 @@ function TenDaysForecast() {
   );
 }
 
+/* =========================================
+   جزئیات هر روز
+========================================= */
+
 function DayWeather({ item, index, selectedDay, setSelectedDay }) {
-  const [hourEmblaRef, hourEmblaApi] = useEmblaCarousel({
-    direction: "rtl",
-    align: "start",
-  });
-
-  const [hourPrev, setHourPrev] = useState(false);
-  const [hourNext, setHourNext] = useState(false);
-
-  const checkButtons = useCallback(() => {
-    if (!hourEmblaApi) return;
-
-    setHourPrev(hourEmblaApi.canScrollPrev());
-    setHourNext(hourEmblaApi.canScrollNext());
-  }, [hourEmblaApi]);
-
-  useEffect(() => {
-    if (!hourEmblaApi) return;
-
-    checkButtons();
-
-    hourEmblaApi.on("select", checkButtons);
-    hourEmblaApi.on("reInit", checkButtons);
-
-    return () => {
-      hourEmblaApi.off("select", checkButtons);
-      hourEmblaApi.off("reInit", checkButtons);
-    };
-  }, [hourEmblaApi, checkButtons]);
-
   const open = selectedDay === index;
 
   return (
-    <div className={open ? "bg-yellow-50 dark:bg-yellow-500/10" : ""}>
-      <div onClick={() => setSelectedDay(open ? null : index)}>
+    <div
+      className={`
+        transition-all
+        duration-300
+
+        ${open ? "bg-yellow-50 dark:bg-yellow-500/10" : ""}
+      `}
+    >
+      {/* ردیف روز */}
+
+      <div
+        onClick={() => setSelectedDay(open ? null : index)}
+        className="cursor-pointer"
+      >
         <ForecastDay
           day={item.day}
           icon={item.icon}
@@ -281,13 +353,15 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
         />
       </div>
 
+      {/* جزئیات */}
+
       <div
         className={`
           overflow-hidden
           transition-all
           duration-500
 
-          ${open ? "max-h-[2500px] opacity-100" : "max-h-0 opacity-0"}
+          ${open ? "max-h-[7000px] opacity-100" : "max-h-0 opacity-0"}
         `}
       >
         <div
@@ -296,8 +370,10 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
             border-t
             border-yellow-200
             dark:border-yellow-500/30
-            "
+          "
         >
+          {/* عنوان */}
+
           <h3
             className="
               text-2xl
@@ -305,16 +381,33 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
               text-gray-800
               dark:text-white
               mb-2
-              "
+            "
           >
             وضعیت آب‌وهوای روز {item.day}
           </h3>
 
-          <p className="text-gray-500 dark:text-gray-400 mb-6">
+          {/* وضعیت */}
+
+          <p
+            className="
+              text-gray-500
+              dark:text-gray-400
+              mb-6
+            "
+          >
             {item.description}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-4">
+          {/* اطلاعات */}
+
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-3
+              gap-4
+            "
+          >
             <InfoCard
               title="رطوبت"
               value={item.humidity}
@@ -334,167 +427,329 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-5">
+          {/* طلوع و غروب */}
+
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              gap-4
+              mt-5
+            "
+          >
             <InfoBox title="طلوع آفتاب" value={item.sunrise} />
 
             <InfoBox title="غروب آفتاب" value={item.sunset} />
           </div>
 
-          <div className="mt-8">
-            <h4
-              className="
-                font-bold
-                text-xl
-                text-gray-800
-                dark:text-white
-                mb-5
-                "
-            >
+          {/* =================================
               پیش‌بینی ساعتی
-            </h4>
+          ================================== */}
 
-            <div className="relative">
-              {/* فلش قبلی */}
-              <button
-                onClick={() => hourEmblaApi?.scrollPrev()}
-                disabled={!hourPrev}
-                className={`
-                  hidden lg:flex
-                  absolute
-                  left-0
-                  top-1/2
-                  -translate-y-1/2
-                  z-20
-                  w-12
-                  h-12
-                  rounded-full
-                  items-center
-                  justify-center
-                  border
-                  shadow-lg
-                  transition-all
+          <DayHourlyForecast day={item.day} hourly={item.hourly} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      ${
-        hourPrev
-          ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
-          : "bg-gray-200 dark:bg-slate-700 border-gray-600"
-      }
-    `}
-              >
-                <Icon
-                  icon="solar:alt-arrow-left-bold"
-                  className={`
-        text-2xl
-        ${hourPrev ? "text-yellow-600" : "text-gray-400"}
-      `}
-                />
-              </button>
+/* =========================================
+   پیش‌بینی ساعتی داخل هر روز
+   دقیقاً با ساختار HourlyForecast
+========================================= */
 
-              {/* فلش بعدی */}
-              <button
-                onClick={() => hourEmblaApi?.scrollNext()}
-                disabled={!hourNext}
-                className={`
-                  hidden lg:flex
-                  absolute
-                  right-0
-                  top-1/2
-                  -translate-y-1/2
-                  z-20
-                  w-12
-                  h-12
-                  rounded-full
-                  items-center
-                  justify-center
-                  border
-                  shadow-lg
-                  transition-all
+function DayHourlyForecast({ day, hourly }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    direction: "rtl",
+    align: "start",
+    containScroll: "trimSnaps",
+    slidesToScroll: 1,
+  });
 
-      ${
-        hourNext
-          ? "bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700"
-          : "bg-gray-200 dark:bg-slate-700 border-gray-600"
-      }
-    `}
-              >
-                <Icon
-                  icon="solar:alt-arrow-right-bold"
-                  className={`
-                    text-2xl
-                    ${hourNext ? "text-yellow-600" : "text-gray-400"}
-                  `}
-                />
-              </button>
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(false);
 
-              {/* لیست ساعت‌ها */}
+  /* وضعیت فلش‌ها */
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+
+    setCanPrev(emblaApi.canScrollPrev());
+    setCanNext(emblaApi.canScrollNext());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    onSelect();
+
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  /* فلش قبلی */
+
+  const scrollPrev = useCallback(() => {
+    emblaApi?.scrollPrev();
+  }, [emblaApi]);
+
+  /* فلش بعدی */
+
+  const scrollNext = useCallback(() => {
+    emblaApi?.scrollNext();
+  }, [emblaApi]);
+
+  if (!hourly || hourly.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-8">
+      {/* عنوان */}
+
+      <div className="mb-5">
+        <h4
+          className="
+            text-xl
+            font-bold
+            text-gray-800
+            dark:text-white
+          "
+        >
+          پیش‌بینی ساعتی {day}
+        </h4>
+      </div>
+
+      {/* اسلایدر */}
+
+      <div className="relative">
+        {/* =================================
+            فلش سمت چپ
+        ================================== */}
+
+        <button
+          type="button"
+          onClick={scrollPrev}
+          disabled={!canPrev}
+          aria-label="ساعات قبلی"
+          className={`
+            hidden
+            lg:flex
+            absolute
+            left-0
+            top-1/2
+            -translate-y-1/2
+            -translate-x-1/2
+            z-20
+            w-12
+            h-12
+            rounded-full
+            items-center
+            justify-center
+            border
+            shadow-xl
+            transition-all
+            duration-300
+
+            ${
+              canPrev
+                ? `
+                  bg-white
+                  dark:bg-slate-800
+                  border-gray-200
+                  dark:border-slate-700
+                  hover:scale-110
+                  hover:shadow-2xl
+                  cursor-pointer
+                `
+                : `
+                  bg-gray-100
+                  dark:bg-slate-800
+                  border-gray-200
+                  dark:border-slate-700
+                  opacity-40
+                  cursor-not-allowed
+                `
+            }
+          `}
+        >
+          <Icon
+            icon="solar:alt-arrow-left-bold"
+            className="
+              text-2xl
+              text-yellow-600
+              dark:text-yellow-400
+            "
+          />
+        </button>
+
+        {/* =================================
+            فلش سمت راست
+        ================================== */}
+
+        <button
+          type="button"
+          onClick={scrollNext}
+          disabled={!canNext}
+          aria-label="ساعات بعدی"
+          className={`
+            hidden
+            lg:flex
+            absolute
+            right-0
+            top-1/2
+            -translate-y-1/2
+            translate-x-1/2
+            z-20
+            w-12
+            h-12
+            rounded-full
+            items-center
+            justify-center
+            border
+            shadow-xl
+            transition-all
+            duration-300
+
+            ${
+              canNext
+                ? `
+                  bg-white
+                  dark:bg-slate-800
+                  border-gray-200
+                  dark:border-slate-700
+                  hover:scale-110
+                  hover:shadow-2xl
+                  cursor-pointer
+                `
+                : `
+                  bg-gray-100
+                  dark:bg-slate-800
+                  border-gray-200
+                  dark:border-slate-700
+                  opacity-40
+                  cursor-not-allowed
+                `
+            }
+          `}
+        >
+          <Icon
+            icon="solar:alt-arrow-right-bold"
+            className="
+              text-2xl
+              text-yellow-600
+              dark:text-yellow-400
+            "
+          />
+        </button>
+
+        {/* =================================
+            ناحیه اسلایدر
+        ================================== */}
+
+        <div
+          ref={emblaRef}
+          className="
+            overflow-hidden
+            px-1
+            cursor-grab
+            active:cursor-grabbing
+          "
+        >
+          <div className="flex">
+            {hourly.map((item, index) => (
               <div
-                ref={hourEmblaRef}
+                key={`${item.id}-${index}`}
                 className="
-                  overflow-hidden
-                  cursor-grab
-                  active:cursor-grabbing
-                  "
+                  flex-[0_0_50%]
+                  sm:flex-[0_0_33.333%]
+                  md:flex-[0_0_25%]
+                  lg:flex-[0_0_16.666%]
+                  px-2
+                "
               >
-                <div className="flex">
-                  {hourlyData.map((hour) => (
-                    <div
-                      key={hour.time}
-                      className="
-                        flex-[0_0_34%]
-                        sm:flex-[0_0_30%]
-                        md:flex-[0_0_25%]
-                        lg:flex-[0_0_16.666%]
-                        px-2
-                      "
-                    >
-                      <div
-                        className="
-                          bg-white
-                          dark:bg-slate-800
-                          rounded-3xl
-                          border
-                          border-gray-100
-                          dark:border-slate-700
-                          shadow-sm
-                          p-2 sm:p-4
-                          text-center
-                          hover:-translate-y-1
-                          hover:shadow-lg
-                          transition-all
-                          duration-300
-                          mt-1
-                          "
-                      >
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {hour.time}
-                        </p>
+                <div
+                  className="
+                    h-full
+                    min-h-52
+                    bg-slate-50
+                    dark:bg-slate-800
+                    rounded-3xl
+                    border
+                    border-gray-100
+                    dark:border-slate-700
+                    shadow-sm
+                    p-5
+                    text-center
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:shadow-xl
+                    hover:border-yellow-200
+                    dark:hover:border-yellow-500/30
+                  "
+                >
+                  {/* ساعت */}
 
-                        <Icon
-                          icon={hour.icon}
-                          className="
-                            text-3xl sm:text-5xl
-                            text-yellow-500
-                            mx-auto
-                            my-4
-                            "
-                        />
+                  <p
+                    className="
+                      text-sm
+                      font-medium
+                      text-gray-500
+                      dark:text-gray-400
+                    "
+                  >
+                    {item.time}
+                  </p>
 
-                        <h3
-                          className="
-                            text-2xl
-                            font-bold
-                            text-gray-800
-                            dark:text-white
-                            "
-                        >
-                          {hour.temp}
-                        </h3>
-                      </div>
-                    </div>
-                  ))}
+                  {/* آیکن */}
+
+                  <Icon
+                    icon={item.icon}
+                    className="
+                      text-5xl
+                      text-yellow-500
+                      mx-auto
+                      my-4
+                    "
+                  />
+
+                  {/* وضعیت */}
+
+                  <p
+                    className="
+                      text-sm
+                      font-semibold
+                      text-gray-600
+                      dark:text-gray-300
+                      min-h-5
+                    "
+                  >
+                    {item.condition}
+                  </p>
+
+                  {/* دما */}
+
+                  <h3
+                    className="
+                      mt-3
+                      text-2xl
+                      font-bold
+                      text-gray-800
+                      dark:text-white
+                    "
+                  >
+                    {item.temp}
+                  </h3>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -502,50 +757,99 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
   );
 }
 
+/* =========================================
+   کارت اطلاعات
+========================================= */
+
 function InfoCard({ title, value, icon }) {
   return (
     <div
       className="
-      bg-white
-      dark:bg-slate-800
-      rounded-3xl
-      p-5
-      flex
-      items-center
-      justify-between
-      shadow-sm
-      border
-      border-gray-100
-      dark:border-slate-700
+        bg-gray-50
+        dark:bg-slate-800
+        rounded-2xl
+        border
+        border-gray-100
+        dark:border-slate-700
+        p-4
+        flex
+        items-center
+        justify-between
       "
     >
       <div>
-        <p className="text-gray-400 text-sm">{title}</p>
+        <p
+          className="
+            text-sm
+            text-gray-500
+            dark:text-gray-400
+          "
+        >
+          {title}
+        </p>
 
-        <p className="font-bold text-xl dark:text-white">{value}</p>
+        <p
+          className="
+            text-xl
+            font-bold
+            text-gray-800
+            dark:text-white
+            mt-1
+          "
+        >
+          {value}
+        </p>
       </div>
 
-      <Icon icon={icon} className="text-4xl text-yellow-500" />
+      <Icon
+        icon={icon}
+        className="
+          text-4xl
+          text-yellow-500
+        "
+      />
     </div>
   );
 }
+
+/* =========================================
+   طلوع و غروب
+========================================= */
 
 function InfoBox({ title, value }) {
   return (
     <div
       className="
-      bg-white
-      dark:bg-slate-800
-      rounded-3xl
-      p-5
-      border
-      border-gray-100
-      dark:border-slate-700
+        bg-gray-50
+        dark:bg-slate-800
+        rounded-2xl
+        border
+        border-gray-100
+        dark:border-slate-700
+        p-4
       "
     >
-      <p className="text-gray-400">{title}</p>
+      <p
+        className="
+          text-sm
+          text-gray-500
+          dark:text-gray-400
+        "
+      >
+        {title}
+      </p>
 
-      <p className="font-bold text-yellow-600">{value}</p>
+      <p
+        className="
+          text-xl
+          font-bold
+          text-yellow-600
+          dark:text-yellow-400
+          mt-2
+        "
+      >
+        {value}
+      </p>
     </div>
   );
 }

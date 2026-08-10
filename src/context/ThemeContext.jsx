@@ -1,12 +1,20 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-const ThemeContext = createContext();
+const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
   const [darkMode, setDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
 
-    return savedTheme === "dark";
+    if (savedTheme === "dark") {
+      return true;
+    }
+
+    if (savedTheme === "light") {
+      return false;
+    }
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
@@ -14,17 +22,15 @@ export function ThemeProvider({ children }) {
 
     if (darkMode) {
       html.classList.add("dark");
-
       localStorage.setItem("theme", "dark");
     } else {
       html.classList.remove("dark");
-
       localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
 
   function toggleTheme() {
-    setDarkMode((previous) => !previous);
+    setDarkMode((prev) => !prev);
   }
 
   return (
@@ -41,5 +47,11 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
-  return useContext(ThemeContext);
+  const context = useContext(ThemeContext);
+
+  if (!context) {
+    throw new Error("useTheme باید داخل ThemeProvider استفاده شود");
+  }
+
+  return context;
 }

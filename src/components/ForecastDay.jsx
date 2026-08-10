@@ -1,9 +1,11 @@
+// src/components/ForecastDay.jsx
+
 import { Icon } from "@iconify/react";
 
 function ForecastDay({ day, icon, min, max, open }) {
   return (
     <div
-      className="
+      className={`
       flex
       items-center
       justify-between
@@ -12,19 +14,31 @@ function ForecastDay({ day, icon, min, max, open }) {
       cursor-pointer
       transition-all
       duration-300
-      hover:bg-yellow-50
-      dark:hover:bg-slate-800
-      "
+
+      ${
+        open
+          ? "bg-yellow-50 dark:bg-yellow-500/10"
+          : "hover:bg-yellow-50 dark:hover:bg-slate-800"
+      }
+
+      `}
     >
-      {/* بخش روز و آیکن */}
-      <div className="flex items-center gap-4">
+      {/* Day + Icon */}
+
+      <div
+        className="
+        flex
+        items-center
+        gap-4
+        "
+      >
         <div
           className="
           w-14
           h-14
           rounded-2xl
           bg-yellow-100
-          dark:bg-slate-800
+          dark:bg-yellow-500/10
           flex
           items-center
           justify-center
@@ -43,19 +57,30 @@ function ForecastDay({ day, icon, min, max, open }) {
 
         <div className="text-right">
           <p
-            className="
+            className={`
             font-bold
-            text-gray-800
-            dark:text-white
-            "
+            text-lg
+            transition-all
+
+            ${open ? "text-yellow-600" : "text-gray-800 dark:text-white"}
+
+            `}
           >
             {day}
           </p>
         </div>
       </div>
 
-      {/* دما و فلش */}
-      <div className="flex items-center gap-6">
+      {/* Temperature + Arrow */}
+
+      <div
+        className="
+        flex
+        items-center
+        gap-4
+        md:gap-6
+        "
+      >
         <div className="text-center">
           <p
             className="
@@ -67,7 +92,14 @@ function ForecastDay({ day, icon, min, max, open }) {
             کمترین
           </p>
 
-          <p className="font-bold text-yellow-600">{min}</p>
+          <p
+            className="
+            font-bold
+            text-yellow-600
+            "
+          >
+            {min}
+          </p>
         </div>
 
         <div className="text-center">
@@ -81,20 +113,41 @@ function ForecastDay({ day, icon, min, max, open }) {
             بیشترین
           </p>
 
-          <p className="font-bold text-orange-500">{max}</p>
+          <p
+            className="
+            font-bold
+            text-orange-500
+            "
+          >
+            {max}
+          </p>
         </div>
 
-        <Icon
-          icon="solar:alt-arrow-down-bold"
-          className={`
-            text-3xl
+        <div
+          className="
+          w-10
+          h-10
+          rounded-xl
+          bg-yellow-100
+          dark:bg-yellow-500/10
+          flex
+          items-center
+          justify-center
+          "
+        >
+          <Icon
+            icon="solar:alt-arrow-down-bold"
+            className={`
+            text-2xl
             text-yellow-500
-            transition-all
+            transition-transform
             duration-300
-            ease-in-out
+
             ${open ? "rotate-180" : "rotate-0"}
-          `}
-        />
+
+            `}
+          />
+        </div>
       </div>
     </div>
   );

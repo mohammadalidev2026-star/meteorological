@@ -1,5 +1,3 @@
-// src/components/Navbar.jsx
-
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { NavLink } from "react-router-dom";
@@ -32,77 +30,107 @@ function Navbar() {
   return (
     <header
       className="
-      sticky
-      top-0
-      z-50
-      w-full
-      backdrop-blur-xl
-      bg-white/80
-      dark:bg-slate-950/80
-      border-b
-      border-gray-200
-      dark:border-slate-800
-      transition-all
-      duration-300
+        sticky
+        top-0
+        z-50
+        w-full
+
+        bg-white/90
+        dark:bg-slate-950/90
+
+        backdrop-blur-xl
+
+        border-b
+        border-gray-100
+        dark:border-slate-800
+
+        transition-colors
+        duration-500
       "
     >
       <nav
         className="
-        max-w-7xl
-        mx-auto
-        px-5
-        py-4
-        flex
-        items-center
-        justify-between
+          max-w-7xl
+          mx-auto
+          px-4
+          py-3
+
+          flex
+          items-center
+          justify-between
+          gap-4
         "
       >
-        {/* Logo */}
-
-        <div className="flex items-center gap-3">
-          <div
-            className="
-            w-14
-            h-14
-            rounded-3xl
-            bg-yellow-100
-            dark:bg-yellow-500/10
+        <NavLink
+          to="/"
+          className="
             flex
             items-center
-            justify-center
-            shadow-sm
+            gap-3
+            shrink-0
+          "
+        >
+          <div
+            className="
+              w-12
+              h-12
+              md:w-14
+              md:h-14
+
+              rounded-2xl
+
+              bg-yellow-100
+              dark:bg-blue-500/10
+
+              flex
+              items-center
+              justify-center
+
+              shadow-sm
+
+              transition-all
+              duration-500
             "
           >
             <Icon
               icon="solar:cloud-sun-bold-duotone"
               className="
-              text-5xl
-              text-yellow-500
+                text-4xl
+                md:text-5xl
+
+                text-yellow-500
+                dark:text-blue-400
+
+                transition-colors
+                duration-500
               "
             />
           </div>
 
           <h1
             className="
-            text-xl
-            md:text-2xl
-            font-extrabold
-            text-gray-800
-            dark:text-white
+              text-lg
+              md:text-2xl
+
+              font-extrabold
+
+              text-gray-800
+              dark:text-white
+
+              transition-colors
+              duration-500
             "
           >
             هواشناسی افغانستان
           </h1>
-        </div>
-
-        {/* Desktop Menu */}
+        </NavLink>
 
         <div
           className="
-          hidden
-          lg:flex
-          items-center
-          gap-3
+            hidden
+            lg:flex
+            items-center
+            gap-2
           "
         >
           {menuItems.map((item) => (
@@ -111,18 +139,38 @@ function Navbar() {
               to={item.path}
               className={({ isActive }) =>
                 `
-                px-5
-                py-2.5
-                rounded-2xl
-                font-semibold
-                transition-all
-                duration-300
+                  px-5
+                  py-2.5
 
-                ${
-                  isActive
-                    ? "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-500 shadow-sm"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-yellow-500"
-                }
+                  rounded-2xl
+
+                  font-semibold
+
+                  transition-all
+                  duration-300
+
+                  ${
+                    isActive
+                      ? `
+                        bg-yellow-100
+                        dark:bg-blue-500/10
+
+                        text-yellow-600
+                        dark:text-blue-400
+
+                        shadow-sm
+                      `
+                      : `
+                        text-gray-700
+                        dark:text-gray-200
+
+                        hover:bg-gray-100
+                        dark:hover:bg-slate-800
+
+                        hover:text-yellow-600
+                        dark:hover:text-blue-400
+                      `
+                  }
                 `
               }
             >
@@ -131,31 +179,49 @@ function Navbar() {
           ))}
         </div>
 
-        {/* Buttons */}
-
         <div
           className="
-          flex
-          items-center
-          gap-3
-          "
-        >
-          {/* Theme Button */}
-
-          <button
-            onClick={toggleTheme}
-            className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-yellow-100
-            dark:bg-slate-800
             flex
             items-center
-            justify-center
-            hover:scale-110
-            transition-all
-            duration-300
+            gap-2
+          "
+        >
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={
+              darkMode ? "فعال کردن حالت روشن" : "فعال کردن حالت تاریک"
+            }
+            title={darkMode ? "حالت روشن" : "حالت تاریک"}
+            className="
+              w-11
+              h-11
+              md:w-12
+              md:h-12
+
+              rounded-2xl
+
+              bg-yellow-100
+              dark:bg-slate-800
+
+              border
+              border-yellow-100
+              dark:border-slate-700
+
+              flex
+              items-center
+              justify-center
+
+              transition-all
+              duration-300
+
+              hover:scale-105
+              hover:shadow-md
+
+              focus:outline-none
+              focus:ring-2
+              focus:ring-yellow-400
+              dark:focus:ring-blue-500
             "
           >
             <Icon
@@ -165,26 +231,48 @@ function Navbar() {
                   : "solar:moon-stars-bold-duotone"
               }
               className="
-              text-3xl
-              text-yellow-500
+                text-3xl
+
+                text-yellow-500
+                dark:text-blue-400
+
+                transition-all
+                duration-500
               "
             />
           </button>
 
-          {/* Mobile Menu */}
-
           <button
-            onClick={() => setMenuOpen(!menuOpen)}
+            type="button"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label={menuOpen ? "بستن منو" : "باز کردن منو"}
             className="
-            lg:hidden
-            w-12
-            h-12
-            rounded-2xl
-            bg-gray-100
-            dark:bg-slate-800
-            flex
-            items-center
-            justify-center
+              lg:hidden
+
+              w-11
+              h-11
+              md:w-12
+              md:h-12
+
+              rounded-2xl
+
+              bg-gray-100
+              dark:bg-slate-800
+
+              border
+              border-gray-200
+              dark:border-slate-700
+
+              flex
+              items-center
+              justify-center
+
+              transition-all
+              duration-300
+
+              hover:scale-105
+
+              focus:outline-none
             "
           >
             <Icon
@@ -194,37 +282,51 @@ function Navbar() {
                   : "solar:hamburger-menu-bold-duotone"
               }
               className="
-              text-3xl
-              text-yellow-500
+                text-3xl
+
+                text-yellow-500
+                dark:text-blue-400
+
+                transition-colors
+                duration-500
               "
             />
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
-
       {menuOpen && (
         <div
           className="
-          lg:hidden
-          px-5
-          pb-5
+            lg:hidden
+            px-4
+            pb-4
           "
         >
           <div
             className="
-            bg-white
-            dark:bg-slate-900
-            rounded-3xl
-            p-5
-            shadow-lg
-            border
-            border-gray-100
-            dark:border-slate-800
-            flex
-            flex-col
-            gap-2
+              max-w-7xl
+              mx-auto
+
+              bg-white
+              dark:bg-slate-900
+
+              rounded-3xl
+
+              p-4
+
+              shadow-xl
+
+              border
+              border-gray-100
+              dark:border-slate-800
+
+              flex
+              flex-col
+              gap-2
+
+              transition-colors
+              duration-500
             "
           >
             {menuItems.map((item) => (
@@ -234,19 +336,37 @@ function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   `
-                px-5
-                py-3
-                rounded-2xl
-                font-semibold
-                transition
+                    px-5
+                    py-3
 
-                ${
-                  isActive
-                    ? "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-500"
-                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800"
-                }
+                    rounded-2xl
 
-                `
+                    font-semibold
+
+                    transition-all
+                    duration-300
+
+                    ${
+                      isActive
+                        ? `
+                          bg-yellow-100
+                          dark:bg-blue-500/10
+
+                          text-yellow-600
+                          dark:text-blue-400
+                        `
+                        : `
+                          text-gray-700
+                          dark:text-gray-200
+
+                          hover:bg-gray-100
+                          dark:hover:bg-slate-800
+
+                          hover:text-yellow-600
+                          dark:hover:text-blue-400
+                        `
+                    }
+                  `
                 }
               >
                 {item.name}

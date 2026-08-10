@@ -1,156 +1,258 @@
 import { Icon } from "@iconify/react";
 
-function TodaySummary() {
-  return (
-    <section className="mt-8">
-      <div
-        className="
-        bg-white
-        dark:bg-slate-900
-        rounded-3xl
-        border
-        border-gray-100
-        dark:border-slate-700
-        shadow-sm
-        p-6
-        transition-all
-        duration-300
-        "
-      >
-        {/* عنوان */}
+function getWeatherIcon(code, time) {
+  const hour = time ? Number(time.slice(11, 13)) : 12;
 
-        <div className="flex items-center gap-3 mb-6">
-          <div
-            className="
-            w-12
-            h-12
-            rounded-2xl
-            bg-yellow-100
-            dark:bg-yellow-500/10
-            flex
-            items-center
-            justify-center
-            "
-          >
-            <Icon
-              icon="solar:calendar-bold-duotone"
-              className="text-3xl text-yellow-500"
-            />
-          </div>
+  // آسمان صاف
+  if (code === 0) {
+    // شب
+    if (hour >= 19 || hour < 6) {
+      return "solar:moon-bold-duotone";
+    }
 
-          <div>
-            <h2
-              className="
-              text-xl
-              font-bold
-              text-gray-800
-              dark:text-white
-              "
-            >
-              وضعیت امروز
-            </h2>
+    // روز
+    return "solar:sun-bold-duotone";
+  }
 
-            <p
-              className="
-              text-sm
-              text-gray-500
-              dark:text-gray-400
-              "
-            >
-              خلاصه وضعیت آب‌وهوای امروز
-            </p>
-          </div>
-        </div>
+  // کمی ابری
+  if ([1, 2].includes(code)) {
+    return "solar:cloud-sun-bold-duotone";
+  }
 
-        {/* کارت‌ها */}
+  // ابری
+  if (code === 3) {
+    return "solar:cloud-bold-duotone";
+  }
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          <Card
-            icon="solar:temperature-bold-duotone"
-            title="کمترین دما"
-            value="10°"
-          />
+  // مه
+  if ([45, 48].includes(code)) {
+    return "solar:cloud-fog-bold-duotone";
+  }
 
-          <Card icon="solar:sun-bold-duotone" title="بیشترین دما" value="40°" />
+  // باران
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+    return "solar:cloud-rain-bold-duotone";
+  }
 
-          <Card
-            icon="solar:sunrise-bold-duotone"
-            title="طلوع آفتاب"
-            value="05:45"
-          />
+  // برف
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "solar:cloud-snow-bold-duotone";
+  }
 
-          <Card
-            icon="solar:sunset-bold-duotone"
-            title="غروب آفتاب"
-            value="19:12"
-          />
-        </div>
-      </div>
-    </section>
-  );
+  // طوفان
+  if ([95, 96, 99].includes(code)) {
+    return "solar:cloud-bolt-bold-duotone";
+  }
+
+  return "solar:cloud-bold-duotone";
 }
 
-function Card({ icon, title, value }) {
+/* =========================================
+   متن وضعیت آب‌وهوا
+========================================= */
+
+function getWeatherText(code, time) {
+  const hour = time ? Number(time.slice(11, 13)) : 12;
+
+  // آسمان صاف
+  if (code === 0) {
+    if (hour >= 19 || hour < 6) {
+      return "صاف";
+    }
+
+    return "آفتابی";
+  }
+
+  // کمی ابری
+  if ([1, 2].includes(code)) {
+    return "کمی ابری";
+  }
+
+  // ابری
+  if (code === 3) {
+    return "ابری";
+  }
+
+  // مه
+  if ([45, 48].includes(code)) {
+    return "مه";
+  }
+
+  // باران
+  if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
+    return "بارانی";
+  }
+
+  // برف
+  if ([71, 73, 75, 77, 85, 86].includes(code)) {
+    return "برفی";
+  }
+
+  // طوفان
+  if ([95, 96, 99].includes(code)) {
+    return "طوفانی";
+  }
+
+  return "نامشخص";
+}
+
+/* =========================================
+   خلاصه وضعیت امروز
+========================================= */
+
+function TodaySummary({ city = "هرات", weather }) {
+  if (!weather?.current || !weather?.daily) {
+    return null;
+  }
+
+  const currentCode = weather.current.weather_code;
+
+  const currentTime = weather.current.time || weather.daily.sunrise?.[0] || "";
+
+  const summary = [
+    {
+      title: "طلوع آفتاب",
+
+      value: weather.daily.sunrise?.[0]
+        ? weather.daily.sunrise[0].slice(11, 16)
+        : "--:--",
+
+      icon: "solar:sunrise-bold-duotone",
+    },
+
+    {
+      title: "غروب آفتاب",
+
+      value: weather.daily.sunset?.[0]
+        ? weather.daily.sunset[0].slice(11, 16)
+        : "--:--",
+
+      icon: "solar:sunset-bold-duotone",
+    },
+
+    {
+      title: "وضعیت امروز",
+
+      value: getWeatherText(currentCode, currentTime),
+
+      icon: getWeatherIcon(currentCode, currentTime),
+    },
+  ];
+
   return (
-    <div
-      className="
-      rounded-2xl
-      bg-gray-50
-      dark:bg-slate-800
-      border
-      border-transparent
-      dark:border-slate-700
-      p-5
-      hover:-translate-y-1
-      hover:shadow-lg
-      transition-all
-      duration-300
-      "
-    >
-      <div
-        className="
-        w-12
-        h-12
-        rounded-2xl
-        bg-yellow-100
-        dark:bg-yellow-500/10
-        flex
-        items-center
-        justify-center
-        mb-4
-        "
-      >
-        <Icon
-          icon={icon}
+    <section className="w-full">
+      {/* =====================================
+          عنوان
+      ====================================== */}
+
+      <div className="mb-5">
+        <h2
           className="
-          text-4xl
-          text-yellow-500
+            text-xl
+            font-bold
+            text-gray-800
+            dark:text-white
           "
-        />
+        >
+          خلاصه وضعیت امروز {city}
+        </h2>
       </div>
 
-      <p
-        className="
-        text-sm
-        text-gray-500
-        dark:text-gray-400
-        "
-      >
-        {title}
-      </p>
+      {/* =====================================
+          کارت‌ها
+      ====================================== */}
 
-      <h3
+      <div
         className="
-        mt-2
-        text-2xl
-        font-bold
-        text-gray-800
-        dark:text-white
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          md:grid-cols-3
+          gap-5
         "
       >
-        {value}
-      </h3>
-    </div>
+        {summary.map((item) => (
+          <div
+            key={item.title}
+            className="
+              group
+              rounded-3xl
+              bg-white
+              dark:bg-slate-900
+              border
+              border-gray-100
+              dark:border-slate-700
+              shadow-sm
+              p-5
+              flex
+              items-center
+              gap-4
+              transition-all
+              duration-300
+              hover:-translate-y-1
+              hover:shadow-xl
+              hover:border-yellow-200
+              dark:hover:border-yellow-500/30
+            "
+          >
+            {/* آیکن */}
+
+            <div
+              className="
+                w-14
+                h-14
+                shrink-0
+                rounded-2xl
+                bg-yellow-100
+                dark:bg-yellow-500/10
+                flex
+                items-center
+                justify-center
+                transition-all
+                duration-300
+                group-hover:scale-105
+              "
+            >
+              <Icon
+                icon={item.icon}
+                className="
+                  text-3xl
+                  text-yellow-500
+                "
+              />
+            </div>
+
+            {/* اطلاعات */}
+
+            <div className="min-w-0">
+              <p
+                className="
+                  text-sm
+                  font-medium
+                  text-gray-500
+                  dark:text-gray-400
+                "
+              >
+                {item.title}
+              </p>
+
+              <p
+                className="
+                  text-lg
+                  font-bold
+                  text-gray-800
+                  dark:text-white
+                  mt-1
+                  truncate
+                "
+              >
+                {item.value}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
