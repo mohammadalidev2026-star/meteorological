@@ -50,10 +50,6 @@ function getWeatherIcon(code, time) {
   return "solar:cloud-bold-duotone";
 }
 
-/* =========================================
-   متن وضعیت آب‌وهوا
-========================================= */
-
 function getWeatherText(code, time) {
   const hour = Number(time.slice(11, 13));
 
@@ -99,10 +95,6 @@ function getWeatherText(code, time) {
   return "نامشخص";
 }
 
-/* =========================================
-   نام روزهای هفته
-========================================= */
-
 const weekDays = [
   "یکشنبه",
   "دوشنبه",
@@ -123,17 +115,9 @@ function getDayName(index, date) {
   return weekDays[day];
 }
 
-/* =========================================
-   TenDaysForecast
-========================================= */
-
 function TenDaysForecast({ city = "هرات", weather }) {
   const [selectedDay, setSelectedDay] = useState(null);
   const [showForecast, setShowForecast] = useState(false);
-
-  /* -----------------------------------------
-     بررسی اطلاعات API
-  ----------------------------------------- */
 
   if (
     !weather ||
@@ -144,10 +128,6 @@ function TenDaysForecast({ city = "هرات", weather }) {
   ) {
     return null;
   }
-
-  /* -----------------------------------------
-     ساخت اطلاعات ۱۰ روز
-  ----------------------------------------- */
 
   const forecast = useMemo(() => {
     return weather.daily.time.map((date, index) => {
@@ -229,10 +209,6 @@ function TenDaysForecast({ city = "هرات", weather }) {
 
   return (
     <section className="w-full">
-      {/* =====================================
-          عنوان پیش‌بینی ۱۰ روز
-      ====================================== */}
-
       <button
         type="button"
         onClick={() => setShowForecast(!showForecast)}
@@ -278,10 +254,6 @@ function TenDaysForecast({ city = "هرات", weather }) {
         />
       </button>
 
-      {/* =====================================
-          لیست روزها
-      ====================================== */}
-
       <div
         className={`
           overflow-hidden
@@ -321,10 +293,6 @@ function TenDaysForecast({ city = "هرات", weather }) {
     </section>
   );
 }
-
-/* =========================================
-   جزئیات هر روز
-========================================= */
 
 function DayWeather({ item, index, selectedDay, setSelectedDay }) {
   const open = selectedDay === index;
@@ -443,21 +411,12 @@ function DayWeather({ item, index, selectedDay, setSelectedDay }) {
             <InfoBox title="غروب آفتاب" value={item.sunset} />
           </div>
 
-          {/* =================================
-              پیش‌بینی ساعتی
-          ================================== */}
-
           <DayHourlyForecast day={item.day} hourly={item.hourly} />
         </div>
       </div>
     </div>
   );
 }
-
-/* =========================================
-   پیش‌بینی ساعتی داخل هر روز
-   دقیقاً با ساختار HourlyForecast
-========================================= */
 
 function DayHourlyForecast({ day, hourly }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -529,10 +488,6 @@ function DayHourlyForecast({ day, hourly }) {
       {/* اسلایدر */}
 
       <div className="relative">
-        {/* =================================
-            فلش سمت چپ
-        ================================== */}
-
         <button
           type="button"
           onClick={scrollPrev}
@@ -588,10 +543,6 @@ function DayHourlyForecast({ day, hourly }) {
             "
           />
         </button>
-
-        {/* =================================
-            فلش سمت راست
-        ================================== */}
 
         <button
           type="button"
@@ -649,10 +600,6 @@ function DayHourlyForecast({ day, hourly }) {
           />
         </button>
 
-        {/* =================================
-            ناحیه اسلایدر
-        ================================== */}
-
         <div
           ref={emblaRef}
           className="
@@ -662,7 +609,7 @@ function DayHourlyForecast({ day, hourly }) {
             active:cursor-grabbing
           "
         >
-          <div className="flex">
+          <div className="flex mb-2">
             {hourly.map((item, index) => (
               <div
                 key={`${item.id}-${index}`}
@@ -693,6 +640,7 @@ function DayHourlyForecast({ day, hourly }) {
                     hover:shadow-xl
                     hover:border-yellow-200
                     dark:hover:border-yellow-500/30
+                    mt-1
                   "
                 >
                   {/* ساعت */}
@@ -757,10 +705,6 @@ function DayHourlyForecast({ day, hourly }) {
   );
 }
 
-/* =========================================
-   کارت اطلاعات
-========================================= */
-
 function InfoCard({ title, value, icon }) {
   return (
     <div
@@ -811,10 +755,6 @@ function InfoCard({ title, value, icon }) {
     </div>
   );
 }
-
-/* =========================================
-   طلوع و غروب
-========================================= */
 
 function InfoBox({ title, value }) {
   return (

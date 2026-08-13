@@ -7,23 +7,9 @@ import afghanistanCities from "../data/afghanistanCities";
 function Settings() {
   const { darkMode, toggleTheme, setDarkMode } = useTheme();
 
-  const [unit, setUnit] = useState(localStorage.getItem("unit") || "°C");
-
-  const [language, setLanguage] = useState(
-    localStorage.getItem("language") || "فارسی",
-  );
-
   const [defaultCity, setDefaultCity] = useState(
     localStorage.getItem("selectedCity") || "هرات",
   );
-
-  useEffect(() => {
-    localStorage.setItem("unit", unit);
-  }, [unit]);
-
-  useEffect(() => {
-    localStorage.setItem("language", language);
-  }, [language]);
 
   useEffect(() => {
     localStorage.setItem("selectedCity", defaultCity);
@@ -34,14 +20,9 @@ function Settings() {
   function resetSettings() {
     setDarkMode(false);
 
-    setUnit("°C");
-    setLanguage("فارسی");
     setDefaultCity("هرات");
 
-    localStorage.setItem("unit", "°C");
-    localStorage.setItem("language", "فارسی");
     localStorage.setItem("selectedCity", "هرات");
-
     localStorage.setItem("theme", "light");
 
     document.documentElement.classList.remove("dark");
@@ -70,6 +51,8 @@ function Settings() {
           mx-auto
         "
       >
+        {/* عنوان صفحه */}
+
         <section
           className="
             bg-white
@@ -174,34 +157,6 @@ function Settings() {
             <ToggleButton active={darkMode} onClick={toggleTheme} />
           </SettingCard>
 
-          {/* واحد دما */}
-
-          <SettingCard
-            icon="solar:temperature-bold-duotone"
-            title="واحد دما"
-            description="انتخاب واحد نمایش دما"
-          >
-            <CustomSelect
-              value={unit}
-              options={["°C", "°F"]}
-              onChange={setUnit}
-            />
-          </SettingCard>
-
-          {/* زبان */}
-
-          <SettingCard
-            icon="solar:translation-bold-duotone"
-            title="زبان"
-            description="انتخاب زبان برنامه"
-          >
-            <CustomSelect
-              value={language}
-              options={["فارسی", "English"]}
-              onChange={setLanguage}
-            />
-          </SettingCard>
-
           {/* شهر پیش‌فرض */}
 
           <SettingCard
@@ -216,6 +171,8 @@ function Settings() {
             />
           </SettingCard>
         </div>
+
+        {/* بازنشانی */}
 
         <button
           type="button"

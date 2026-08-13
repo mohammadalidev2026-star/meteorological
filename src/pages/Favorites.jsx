@@ -51,7 +51,9 @@ function getWeatherIcon(code, time) {
 }
 
 function getWeatherText(code) {
-  if (code === 0) return "آفتابی";
+  if (code === 0) {
+    return "آفتابی";
+  }
 
   if ([1, 2].includes(code)) {
     return "کمی ابری";
@@ -85,8 +87,14 @@ function Favorites() {
   const [weatherData, setWeatherData] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // شهر انتخاب‌شده برای حذف
+  const [deleteCity, setDeleteCity] = useState(null);
+
   const navigate = useNavigate();
 
+  /*
+    دریافت شهرهای مورد علاقه
+  */
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("favorites"));
@@ -98,10 +106,14 @@ function Favorites() {
       }
     } catch (error) {
       console.error("خطا در خواندن شهرهای مورد علاقه:", error);
+
       setFavorites([]);
     }
   }, []);
 
+  /*
+    دریافت آب‌وهوای شهرهای مورد علاقه
+  */
   useEffect(() => {
     if (favorites.length === 0) {
       setWeatherData({});
@@ -151,6 +163,11 @@ function Favorites() {
     };
   }, [favorites]);
 
+  /*
+    حذف شهر
+    این تابع فقط زمانی اجرا می‌شود که
+    کاربر روی «بله» کلیک کند.
+  */
   function removeCity(cityName) {
     const updatedFavorites = favorites.filter((item) => item.city !== cityName);
 
@@ -167,6 +184,9 @@ function Favorites() {
     });
   }
 
+  /*
+    باز کردن شهر
+  */
   function openCity(cityName) {
     localStorage.setItem("selectedCity", cityName);
 
@@ -193,80 +213,33 @@ function Favorites() {
         mx-auto
         "
       >
-        <section
-          className="
-          bg-white
-          dark:bg-slate-900
-          rounded-3xl
-          border
-          border-slate-200
-          dark:border-slate-800
-          shadow-sm
-          p-6
-          md:p-8
-          mb-6
-          transition-all
-          duration-300
-          "
-        >
-          <div
-            className="
-            flex
-            items-center
-            gap-4
-            "
-          >
-            <div
+        {/* Header */}
+        <section className="mb-8">
+          <div>
+            <h1
               className="
-              w-14
-              h-14
-              shrink-0
-              rounded-2xl
-              bg-blue-50
-              dark:bg-blue-500/10
-              border
-              border-blue-100
-              dark:border-blue-500/20
-              flex
-              items-center
-              justify-center
+              text-3xl
+              font-extrabold
+              text-slate-800
+              dark:text-white
               "
             >
-              <Icon
-                icon="solar:star-bold-duotone"
-                className="
-                text-4xl
-                text-blue-500
-                dark:text-blue-400
-                "
-              />
-            </div>
+              شهرهای مورد علاقه
+            </h1>
 
-            <div>
-              <h1
-                className="
-                text-3xl
-                font-extrabold
-                text-slate-800
-                dark:text-white
-                "
-              >
-                شهرهای مورد علاقه
-              </h1>
-
-              <p
-                className="
-                text-slate-500
-                dark:text-slate-400
-                mt-2
-                "
-              >
-                وضعیت فعلی شهرهای ذخیره‌شده شما
-              </p>
-            </div>
+            <p
+              className="
+              text-slate-500
+              dark:text-slate-400
+              mt-2
+              "
+            >
+              وضعیت فعلی شهرهای ذخیره‌شده شما
+            </p>
           </div>
         </section>
 
+        {/* Loading */}
         {loading && favorites.length > 0 && (
           <section
             className="
@@ -291,8 +264,8 @@ function Favorites() {
               border-4
               border-slate-200
               dark:border-slate-700
-              border-t-blue-500
-              dark:border-t-blue-400
+              border-t-yellow-500
+              dark:border-t-blue-500
               animate-spin
               "
             />
@@ -321,6 +294,7 @@ function Favorites() {
           </section>
         )}
 
+        {/* Empty */}
         {!loading && favorites.length === 0 && (
           <section
             className="
@@ -341,7 +315,7 @@ function Favorites() {
               w-20
               h-20
               rounded-3xl
-              bg-blue-50
+              bg-yellow-50
               dark:bg-blue-500/10
               flex
               items-center
@@ -354,7 +328,7 @@ function Favorites() {
                 icon="solar:star-fall-bold-duotone"
                 className="
                 text-5xl
-                text-blue-500
+                text-yellow-500
                 dark:text-blue-400
                 "
               />
@@ -383,6 +357,7 @@ function Favorites() {
           </section>
         )}
 
+        {/* Favorites */}
         {!loading && favorites.length > 0 && (
           <div
             className="
@@ -429,14 +404,13 @@ function Favorites() {
                   p-6
                   hover:-translate-y-1
                   hover:shadow-xl
-                  hover:border-blue-200
+                  hover:border-yellow-200
                   dark:hover:border-blue-500/30
                   transition-all
                   duration-300
                   "
                 >
                   {/* Top */}
-
                   <div
                     className="
                     flex
@@ -444,15 +418,16 @@ function Favorites() {
                     justify-between
                     "
                   >
+                    {/* Weather Icon */}
                     <div
                       className="
                       w-14
                       h-14
                       rounded-2xl
-                      bg-blue-50
+                      bg-yellow-50
                       dark:bg-blue-500/10
                       border
-                      border-blue-100
+                      border-yellow-100
                       dark:border-blue-500/20
                       flex
                       items-center
@@ -466,31 +441,32 @@ function Favorites() {
                         icon={icon}
                         className="
                         text-4xl
-                        text-blue-500
+                        text-yellow-600
                         dark:text-blue-400
                         "
                       />
                     </div>
 
+                    {/* Delete Button */}
                     <button
                       type="button"
                       aria-label={`حذف ${favorite.city}`}
                       onClick={(event) => {
                         event.stopPropagation();
 
-                        removeCity(favorite.city);
+                        setDeleteCity(favorite.city);
                       }}
                       className="
                       w-11
                       h-11
                       rounded-xl
-                      bg-red-50
-                      dark:bg-red-500/10
+                      bg-yellow-50
+                      dark:bg-blue-500/10
                       flex
                       items-center
                       justify-center
-                      hover:bg-red-100
-                      dark:hover:bg-red-500/20
+                      hover:bg-yellow-100
+                      dark:hover:bg-blue-500/20
                       hover:scale-105
                       transition-all
                       duration-200
@@ -500,14 +476,14 @@ function Favorites() {
                         icon="solar:trash-bin-trash-bold-duotone"
                         className="
                         text-2xl
-                        text-red-500
+                        text-yellow-500
+                        dark:text-blue-400
                         "
                       />
                     </button>
                   </div>
 
                   {/* City */}
-
                   <h2
                     className="
                     text-2xl
@@ -521,7 +497,6 @@ function Favorites() {
                   </h2>
 
                   {/* Condition */}
-
                   <p
                     className="
                     text-slate-500
@@ -533,7 +508,6 @@ function Favorites() {
                   </p>
 
                   {/* Temperature */}
-
                   <div
                     className="
                     mt-8
@@ -570,17 +544,14 @@ function Favorites() {
                       icon={icon}
                       className="
                       text-5xl
-                      text-blue-500
+                      text-yellow-600
                       dark:text-blue-400
-                      opacity-20
-                      group-hover:opacity-40
-                      transition-opacity
+                     
                       "
                     />
                   </div>
 
                   {/* Open */}
-
                   <div
                     className="
                     mt-6
@@ -597,7 +568,7 @@ function Favorites() {
                       className="
                       text-sm
                       font-semibold
-                      text-blue-500
+                      text-yellow-500
                       dark:text-blue-400
                       "
                     >
@@ -608,7 +579,7 @@ function Favorites() {
                       icon="solar:arrow-left-bold"
                       className="
                       text-lg
-                      text-blue-500
+                      text-yellow-500
                       dark:text-blue-400
                       group-hover:-translate-x-1
                       transition-transform
@@ -621,6 +592,145 @@ function Favorites() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteCity && (
+        <div
+          className="
+          fixed
+          inset-0
+          z-50
+          flex
+          items-center
+          justify-center
+          bg-black/40
+          backdrop-blur-sm
+          px-4
+          "
+          onClick={() => setDeleteCity(null)}
+        >
+          <div
+            className="
+            w-full
+            max-w-md
+            bg-white
+            dark:bg-slate-900
+            rounded-3xl
+            border
+            border-slate-200
+            dark:border-slate-800
+            shadow-2xl
+            p-7
+            text-center
+            "
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* Modal Icon */}
+            <div
+              className="
+              w-16
+              h-16
+              mx-auto
+              rounded-2xl
+              bg-yellow-50
+              dark:bg-blue-500/10
+              flex
+              items-center
+              justify-center
+              "
+            >
+              <Icon
+                icon="solar:trash-bin-trash-bold-duotone"
+                className="
+                text-3xl
+                text-yellow-500
+                dark:text-blue-400
+                "
+              />
+            </div>
+
+            {/* Title */}
+            <h2
+              className="
+              mt-5
+              text-xl
+              font-bold
+              text-slate-800
+              dark:text-white
+              "
+            >
+              آیا می‌خواهید این شهر را حذف کنید؟
+            </h2>
+
+            {/* Description */}
+            <p
+              className="
+              mt-3
+              text-slate-500
+              dark:text-slate-400
+              leading-7
+              "
+            >
+              شهر «{deleteCity}» از شهرهای مورد علاقه شما حذف خواهد شد.
+            </p>
+
+            {/* Buttons */}
+            <div
+              className="
+              mt-7
+              flex
+              gap-3
+              "
+            >
+              {/* No */}
+              <button
+                type="button"
+                onClick={() => setDeleteCity(null)}
+                className="
+                flex-1
+                py-3
+                rounded-2xl
+                bg-slate-100
+                dark:bg-slate-800
+                text-slate-700
+                dark:text-slate-200
+                font-bold
+                hover:bg-slate-200
+                dark:hover:bg-slate-700
+                transition-all
+                duration-200
+                "
+              >
+                خیر
+              </button>
+
+              {/* Yes */}
+              <button
+                type="button"
+                onClick={() => {
+                  removeCity(deleteCity);
+                  setDeleteCity(null);
+                }}
+                className="
+                flex-1
+                py-3
+                rounded-2xl
+                bg-yellow-500
+                dark:bg-blue-500
+                text-white
+                font-bold
+                hover:bg-yellow-600
+                dark:hover:bg-blue-600
+                transition-all
+                duration-200
+                "
+              >
+                بله
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
